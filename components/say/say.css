@@ -1,0 +1,61 @@
+/* Say: conversations inside the existing black-and-white system. Phone first. */
+.say button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.say .num, .say-badge { font-family: var(--ds-mono); }
+
+.say-meta { margin: 0; font-family: var(--ds-mono); font-size: 11px; letter-spacing: var(--ds-track-meta); }
+.say-chip { text-decoration: underline; text-underline-offset: 3px; }
+.say-textbtn { font-family: var(--ds-mono) !important; font-size: 11px !important; text-decoration: underline; text-underline-offset: 3px; min-height: 36px; }
+.say-primary { display: inline-flex; align-items: center; min-height: 40px; padding: 0 18px !important; background: var(--ds-ink) !important; color: var(--ds-paper) !important; font-family: var(--ds-sans) !important; font-size: 12px !important; font-weight: 600; letter-spacing: var(--ds-track-nav); text-transform: uppercase; }
+.say-primary:disabled { opacity: 0.3; cursor: default; }
+.say-empty { margin: 12px 0; font-size: 14px; }
+.say-foot { padding: 24px 0; text-align: center; }
+
+/* Block on the restaurant page, between the film and the menu. */
+.say-block { margin: 16px 0; padding: 20px 24px; border: var(--ds-line); }
+.say-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 8px; }
+.say-head h2 { margin: 0; font-size: 20px; }
+.say-block .say-composer-closed, .say-block .say-composer { margin-top: 14px; }
+.say-more { display: block; margin-top: 4px; }
+
+/* Thread cards */
+.say-card { padding: 12px 0; border-top: 1px solid var(--ds-ink); }
+.say-card-body { min-width: 0; }
+.say-card-title { margin: 3px 0; font-size: 16px; line-height: 1.3; font-weight: 600; overflow-wrap: anywhere; }
+.say-card-title a { display: block; text-decoration: none; }
+
+/* Composer */
+.say-composer-closed { width: 100%; min-height: 48px; padding: 0 14px !important; text-align: left; border: var(--ds-line) !important; font-size: 15px; }
+.say-composer { display: grid; gap: 10px; padding: 12px; border: var(--ds-line); }
+.say-composer input, .say-composer textarea, .say-filters select {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--ds-ink); border-radius: 0; background: var(--ds-paper); color: var(--ds-ink); font: inherit; font-size: 16px; resize: vertical;
+}
+.say-composer .say-input-title { font-weight: 600; }
+.say-composer input:focus, .say-composer textarea:focus { outline: 2px solid var(--ds-ink); outline-offset: -1px; }
+.say-field { display: grid; gap: 6px; }
+.say-row { display: flex; justify-content: space-between; align-items: center; }
+.say-suggest { list-style: none; margin: 0; padding: 0; border: 1px solid var(--ds-ink); border-top: 0; }
+.say-suggest button { display: flex; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; padding: 0 12px !important; text-align: left; border-top: 1px solid var(--ds-ink) !important; }
+
+/* /say feed */
+.say-filters { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding-bottom: 6px; border-bottom: var(--ds-line); }
+.say-filters select { width: auto; max-width: 55%; padding: 6px 8px; font-family: var(--ds-mono); font-size: 12px; border: 0; }
+.say-filters + .say-card { border-top: 0; }
+
+
+/* Thread page */
+.say-crumb { padding: 18px 0 0; }
+.say-op { padding: 14px 0; border-bottom: var(--ds-line); }
+.say-op-title { margin: 4px 0 8px; font-size: 24px; line-height: 1.2; }
+.say-text { margin: 4px 0; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; white-space: pre-line; }
+.say-reply { margin: 16px 0 4px; }
+.say-count { display: block; margin-top: 20px; padding-bottom: 8px; border-bottom: var(--ds-line); }
+.say-comments { list-style: none; margin: 0; padding: 0; }
+.say-comments.is-nested { margin-left: 4px; padding-left: 12px; border-left: 1.5px solid var(--ds-ink); }
+.say-comment { padding: 12px 0 0; }
+
+@media (max-width: 540px) {
+  .say-block { padding: 18px 16px; }
+}
+.say-error { margin: 0; font-size: 13px; color: #a3261c; }
+/* Honeypot: off-screen for people, still in the form for bots. */
+.say-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
