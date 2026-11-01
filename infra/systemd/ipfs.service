@@ -1,0 +1,26 @@
+# Kubo (IPFS) node. RPC API on 127.0.0.1:5001 and gateway on 127.0.0.1:8080 only
+# (set by bootstrap.sh); the swarm port 4001 is the only public one.
+[Unit]
+Description=IPFS node (Kubo)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+User=ipfs
+Group=ipfs
+Environment=IPFS_PATH=/var/lib/ipfs
+ExecStart=/usr/local/bin/ipfs daemon --migrate=true --enable-gc
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGINT
+LimitNOFILE=65536
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/ipfs
+MemoryMax=2G
+
+[Install]
+WantedBy=multi-user.target

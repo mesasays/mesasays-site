@@ -63,3 +63,16 @@
 /* /say and thread pages: title and intro under the masthead. */
 .say-page-title { margin: 32px 0 8px; }
 .say-page-lede { margin: 0 0 20px; font-size: 15px; line-height: 1.5; max-width: 60ch; }
+
+/* Signed notes: wallet signature option, badge, and the "Verify" details. */
+.say-dim { opacity: 0.55; }
+.say-sign { display: flex; align-items: center; gap: 8px; min-height: 36px; cursor: pointer; }
+.say-composer .say-sign input { width: 18px; height: 18px; margin: 0; padding: 0; accent-color: var(--ms-ink); flex: none; }
+.say-sign-hint { opacity: 0.55; }
+.say-badge { white-space: nowrap; }
+.say-badge.is-invalid { color: var(--ms-error); }
+.say-verify { margin: 4px 0; }
+.say-verify summary { display: inline-flex; align-items: center; min-height: 32px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.say-verify-body { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid var(--ms-ink); }
+.say-verify code { font-family: var(--ms-font-mono); word-break: break-all; }
+.say-json { margin: 0; padding: 10px; max-height: 320px; overflow: auto; background: var(--ms-field); border: 1px solid var(--ms-ink); font-family: var(--ms-font-mono); font-size: 11px; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }

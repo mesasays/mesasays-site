@@ -3,6 +3,8 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 export const runtime = "nodejs";
+// Rendered once at build time (also required by the static IPFS export).
+export const dynamic = "force-static";
 export const size = { width: 192, height: 192 };
 export const contentType = "image/png";
 

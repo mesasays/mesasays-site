@@ -6,6 +6,8 @@ import { formatCuisine } from "@/lib/restaurants/format";
 import { restaurantPriceSymbol } from "@/lib/restaurants/quick-facts";
 
 export const runtime = "nodejs";
+// Rendered once at build time (also required by the static IPFS export).
+export const dynamic = "force-static";
 // Prerendered for every restaurant at build time, like the page itself (no function call per share).
 export const dynamicParams = false;
 

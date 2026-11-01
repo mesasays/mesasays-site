@@ -7,7 +7,15 @@ const SECURITY_HEADERS = [
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
 ];
 
-const nextConfig: NextConfig = {
+// Build target, chosen with MESASAYS_TARGET:
+// - unset: the current Vercel-style build (unchanged).
+// - "server": same app, packaged as a standalone Node server for our own machine (infra/).
+// - "ipfs": the guide as plain files in out/ (no server), for IPFS and mesasays.eth.
+//   Say cannot run without a server, so scripts/build-ipfs.mjs swaps it for a static notice.
+const TARGET = process.env.MESASAYS_TARGET ?? "";
+if (TARGET && TARGET !== "server" && TARGET !== "ipfs") throw new Error(`Unknown MESASAYS_TARGET: ${TARGET}`);
+
+const baseConfig: NextConfig = {
   devIndicators: false,
   // Lets a phone on the same wifi load the dev server (demo previews); no effect in production.
   allowedDevOrigins: [],
@@ -41,8 +49,30 @@ const nextConfig: NextConfig = {
       "./restaurant-intelligence/pipeline/**",
       "./restaurant-intelligence/schema/**",
       "./restaurant-intelligence/site-data/**",
+      // Static IPFS export output and its build stash, never part of the server.
+      "./out/**",
+      "./.ipfs-build/**",
     ],
   },
 };
+
+// Static export: no headers/redirects (a gateway serves the files as they are), folders with
+// index.html so IPFS gateways resolve /restaurants/x/ without a server, and no image server.
+const ipfsConfig: NextConfig = {
+  devIndicators: false,
+  poweredByHeader: false,
+  output: "export",
+  trailingSlash: true,
+  images: { unoptimized: true },
+  turbopack: {
+    resolveAlias: {
+      // The live conversation block (server actions + /say/threads) becomes a link to mesasays.com/say.
+      "@/components/say/Say": "./components/say/SayStatic.tsx",
+    },
+  },
+};
+
+const nextConfig: NextConfig =
+  TARGET === "ipfs" ? ipfsConfig : TARGET === "server" ? { ...baseConfig, output: "standalone" } : baseConfig;
 
 export default nextConfig;

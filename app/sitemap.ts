@@ -5,6 +5,9 @@ import { MIN_RESTAURANTS_PER_DISH } from "@/lib/restaurants/dishes";
 import { loadCatalog } from "@/lib/restaurants/load";
 import { absoluteUrl } from "@/lib/site";
 
+// Rendered once at build time (also required by the static IPFS export).
+export const dynamic = "force-static";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [slugs, collectionParams, collections, catalog] = await Promise.all([
     listRestaurantSlugs(),

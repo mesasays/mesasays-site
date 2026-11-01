@@ -14,6 +14,9 @@ const AI_BOTS = [
   "meta-externalagent",
 ];
 
+// Rendered once at build time (also required by the static IPFS export).
+export const dynamic = "force-static";
+
 export default function robots(): MetadataRoute.Robots {
   const site = getSiteUrl();
   return {

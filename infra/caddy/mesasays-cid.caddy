@@ -1,0 +1,2 @@
+# Written by infra/deploy.sh: the CID of the current static site.
+vars cid bafkqaaa

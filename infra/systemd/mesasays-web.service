@@ -1,0 +1,32 @@
+# MesaSays website: Next.js standalone server, reachable only through Caddy (127.0.0.1:3000).
+[Unit]
+Description=MesaSays website (Next.js)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mesasays
+Group=mesasays
+WorkingDirectory=/srv/mesasays/current
+EnvironmentFile=/etc/mesasays/env
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/local/bin/node server.js
+Restart=always
+RestartSec=3
+# Hardening: no new privileges, read-only system, private /tmp, no access to home folders.
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=1500M
+
+[Install]
+WantedBy=multi-user.target

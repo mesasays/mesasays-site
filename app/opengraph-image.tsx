@@ -4,6 +4,8 @@ import { join } from "node:path";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 
 export const runtime = "nodejs";
+// Rendered once at build time (also required by the static IPFS export).
+export const dynamic = "force-static";
 export const alt = `${SITE_NAME} — ${SITE_TAGLINE}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

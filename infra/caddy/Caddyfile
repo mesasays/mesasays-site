@@ -1,0 +1,44 @@
+# Caddy: HTTPS certificates are obtained and renewed automatically (ACME, see docs/INFRA_EU.md).
+# No access logs are written (no `log` directive): visitors' IPs are not stored.
+{
+	email {$MESASAYS_ACME_EMAIL:retroprank@proton.me}
+}
+
+# The website (Next.js standalone server, systemd unit mesasays-web).
+mesasays.com {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:3000
+}
+
+www.mesasays.com {
+	redir https://mesasays.com{uri} permanent
+}
+
+# Old domain: keep redirecting for at least a year (point its DNS at OVH to this server too).
+# Until that DNS change, Caddy simply cannot get these certificates and retries; harmless.
+thediningdispatch.fr, www.thediningdispatch.fr {
+	redir https://mesasays.com{uri} permanent
+}
+
+# Our own IPFS gateway, read-only, serving only what this node has pinned (Gateway.NoFetch).
+# Kubo knows this host as a path gateway (Gateway.PublicGateways, set by bootstrap.sh).
+# - gateway.mesasays.com/ipfs/<cid>/...  any pinned version (path gateway)
+# - gateway.mesasays.com/...             the current version of the site at the domain root
+#   (the current CID is written to mesasays-cid.caddy by infra/deploy.sh)
+gateway.mesasays.com {
+	import /etc/caddy/mesasays-cid.caddy
+	encode zstd gzip
+	# Only reads. The Kubo RPC API (port 5001) is never exposed.
+	@write not method GET HEAD OPTIONS
+	handle @write {
+		respond 405
+	}
+	@ipfs path /ipfs/* /ipns/*
+	handle @ipfs {
+		reverse_proxy 127.0.0.1:8080
+	}
+	handle {
+		rewrite * /ipfs/{vars.cid}{uri}
+		reverse_proxy 127.0.0.1:8080
+	}
+}

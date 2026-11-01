@@ -43,6 +43,18 @@ from an explicit list of files, into this repository, and refuses to publish any
 looks like a secret. So this repository is the real code of mesasays.com, but the day-to-day
 history happens elsewhere for now. Moving development here is on the list above.
 
+## Signed notes
+
+Posts and replies on Say can be signed with an Ethereum wallet (Rabby, MetaMask…). It is an
+EIP-712 typed-data signature (`eth_signTypedData_v4`): free, no transaction, no gas, tied to no
+chain. The signature, not our database, is the proof: each signed note carries the exact JSON
+that was signed (domain `MesaSays` v1, type
+`Note(kind, place, thread, parent, title, text, author, createdAt)`), and anyone can check it
+with viem or ethers `verifyTypedData`. The site checks every signature again each time it shows
+a post. A signature proves which address wrote the text, not who the person is; addresses we
+know are labelled. Unsigned posts are still welcome and are marked "not signed".
+Spec: `lib/say/signature.ts`, tests: `node scripts/test-signed-notes.mjs`.
+
 ## The data
 
 `data/` holds the open dataset: restaurants (address, contact, hours, booking, map position)
