@@ -54,28 +54,28 @@ export default async function CollectionPage({
   const prices = groupPriceStats(restaurants);
 
   return (
-    <main className="ds-page">
+    <main className="ms-page">
       <JsonLd data={collectionJsonLd(collection)} />
-      <div className="ds-kicker-row">
-        <span className="ds-label">
+      <div className="ms-eyebrow">
+        <span className="ms-label">
           {SITE_CITY} · {collectionTypeLabel(collection.type)}
         </span>
-        <span className="num">{restaurants.length} restaurants</span>
+        <span className="ms-num">{restaurants.length} restaurants</span>
       </div>
-      <h1 className="ds-title">{collection.label}</h1>
+      <h1 className="ms-title">{collection.label}</h1>
       {prices ? (
-        <p className="ds-lede">
+        <p className="ms-lede">
           Median dish price here: <strong>{pesos(prices.medianOfMedians)}</strong> (most restaurants between{" "}
           {pesos(prices.p25)} and {pesos(prices.p75)}), from {prices.restaurants} official menus checked through{" "}
           {formatObserved(prices.latestCheck)}.{" "}
-          <Link href="/prices" className="ds-link">
+          <Link href="/prices" className="ms-link">
             Compare with the rest of the city
           </Link>
           .
         </p>
       ) : null}
       {restaurants.length === 0 ? (
-        <p className="ds-empty">—</p>
+        <p className="ms-empty">—</p>
       ) : (
         <RestaurantTiles tiles={tilesFor(restaurants, await listBudgetIndex("en"), "en")} locale="en" />
       )}

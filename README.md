@@ -35,7 +35,7 @@ npm run dev
 ```
 
 The site reads its catalog from `restaurant-intelligence/v1/` (not included yet, see
-[DATA_LICENSE.md](DATA_LICENSE.md)). The styles are being rewritten (see `vendor/deepstate/css`).
+[DATA_LICENSE.md](DATA_LICENSE.md)). The design system lives in `app/styles/`: `tokens.css` (colours, type, spacing) and `mesa.css` (base, layout, components).
 Stack: Next.js, React, TypeScript, Tailwind.
 
 ## Honesty
@@ -47,7 +47,7 @@ Stack: Next.js, React, TypeScript, Tailwind.
 
 ## Fonts
 
-Space Grotesk and Space Mono, SIL Open Font License 1.1 (see `vendor/deepstate/fonts/`).
+Space Grotesk and Space Mono, SIL Open Font License 1.1 (see `app/fonts/`).
 
 ## Contributing
 

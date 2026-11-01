@@ -15,8 +15,8 @@ function bandLinkText(band: BudgetBand, locale: Locale) {
 
 function Fact({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="ds-row">
-      <span className="ds-label">{label}</span>
+    <div className="ms-fact">
+      <span className="ms-label">{label}</span>
       <span>{children}</span>
     </div>
   );
@@ -43,12 +43,12 @@ export function RestaurantQuickFacts({
   if (!hasAny) return null;
 
   return (
-    <section className="ds-panel ds-quick" aria-labelledby="quick-facts" style={{ marginBottom: 16 }}>
-      <div className="ds-panel-head">
+    <section className="ms-box ms-quick" aria-labelledby="quick-facts" style={{ marginBottom: 16 }}>
+      <div className="ms-box-head">
         {/* The box needs no title on screen; the check date is the useful part. */}
-        <span className="ds-label" id="quick-facts" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>{s.quickAnswers}</span>
+        <span className="ms-label" id="quick-facts" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>{s.quickAnswers}</span>
         {facts.menu ? (
-          <span className="ds-label">
+          <span className="ms-label">
             {s.menuChecked} {date(facts.menu.checkedAt)}
             {facts.menu.overdue ? ` · ${s.recheckDue}` : ""}
           </span>
@@ -58,12 +58,12 @@ export function RestaurantQuickFacts({
       {/* Short answers only; method, ranges and sources stay in the FAQ data and the /facts text files. */}
       {facts.meal ? (
         <Fact label={s.mealForOne}>
-          <strong className="ds-key-price">≈ {pesos(facts.meal.estimate)}</strong>
-          <span className="num"> {foreignEquivalent(facts.meal.estimate)} · {mealExtrasNote(locale)}</span>
+          <strong className="ms-meal-price">≈ {pesos(facts.meal.estimate)}</strong>
+          <span className="ms-num"> {foreignEquivalent(facts.meal.estimate)} · {mealExtrasNote(locale)}</span>
           {/* Budget left the main menu: each record points to its price band instead. */}
-          <span className="ds-fact-link num">
+          <span className="ms-fact-link ms-num">
             {" "}
-            <Link prefetch={false} href={budgetPath(locale, bandFor(facts.meal.estimate)) as never} className="ds-link">
+            <Link prefetch={false} href={budgetPath(locale, bandFor(facts.meal.estimate)) as never} className="ms-link">
               {bandLinkText(bandFor(facts.meal.estimate), locale)} <span aria-hidden="true">→</span>
             </Link>
           </span>
@@ -78,7 +78,7 @@ export function RestaurantQuickFacts({
 
       {facts.tastingMenus.map((menu) => (
         <Fact key={menu.name} label={s.setMenu}>
-          <strong>{pesos(menu.price)}</strong> <span className="num">· {menu.name}</span>
+          <strong>{pesos(menu.price)}</strong> <span className="ms-num">· {menu.name}</span>
         </Fact>
       ))}
 
@@ -88,20 +88,20 @@ export function RestaurantQuickFacts({
       ) : null}
 
       {facts.menu || bookUrl || callPhone || igUrl ? (
-        <div className="ds-card-actions">
-          {facts.menu ? <a href="#menu" className="ds-cta">{s.menu}</a> : null}
+        <div className="ms-actions">
+          {facts.menu ? <a href="#menu" className="ms-button">{s.menu}</a> : null}
           {bookUrl ? (
-            <a href={bookUrl} className="ds-cta ds-cta-book" rel="noreferrer" target="_blank">
+            <a href={bookUrl} className="ms-button ms-button-book" rel="noreferrer" target="_blank">
               Booking
             </a>
           ) : null}
           {callPhone ? (
-            <a href={`tel:${callPhone.replace(/[^+\d]/g, "")}`} className="ds-cta ds-cta-book">
+            <a href={`tel:${callPhone.replace(/[^+\d]/g, "")}`} className="ms-button ms-button-book">
               {locale === "es" ? "Llamar" : "Call"}
             </a>
           ) : null}
           {igUrl ? (
-            <a href={igUrl} className="ds-cta ds-cta-ig" rel="noreferrer" target="_blank">Instagram</a>
+            <a href={igUrl} className="ms-button ms-button-ig" rel="noreferrer" target="_blank">Instagram</a>
           ) : null}
         </div>
       ) : null}

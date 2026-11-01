@@ -18,21 +18,21 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-// The home page is one task, like deepstate.sh's swap panel: say what this is, then search.
+// The home page is one task: say what this is, then help the visitor find a table.
 // Everything else lives one click away (nav, footer); structured data stays in the page.
 export default async function HomePage() {
   const [all, sample] = await Promise.all([listAllRestaurantRecords(), listLaunchRestaurantRecords(12)]);
 
   return (
-    <main className="ds-page ds-home">
+    <main className="ms-page ms-home">
       <JsonLd data={catalogJsonLd(all.length, sample)} />
-      <h1 className="ds-title">{SITE_TAGLINE}</h1>
-      <p className="ds-home-punch">No restaurant pays to be here.</p>
+      <h1 className="ms-title">{SITE_TAGLINE}</h1>
+      <p className="ms-promise">No restaurant pays to be here.</p>
 
       <HomeFinder {...(await finderProps("en"))} locale="en" />
 
-      <p className="ds-home-say">
-        Been somewhere? <Link href={"/say" as never} className="ds-link">Say what to order, and what to skip <span aria-hidden="true">→</span></Link>
+      <p className="ms-say-invite">
+        Been somewhere? <Link href={"/say" as never} className="ms-link">Say what to order, and what to skip <span aria-hidden="true">→</span></Link>
       </p>
     </main>
   );

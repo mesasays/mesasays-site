@@ -17,14 +17,14 @@ export default async function RestaurantesPage() {
   const [all, index] = await Promise.all([listAllRestaurantRecords(), listBudgetIndex("es")]);
   const tiles = tilesFor(all, index, "es").sort((a, b) => a.name.localeCompare(b.name));
   return (
-    <main className="ds-page" lang="es-MX">
-      <div className="ds-kicker-row">
-        <span className="ds-label">Ciudad de México</span>
-        <span className="num">
-          {all.length} restaurantes · <Link href="/collections" className="ds-link" hrefLang="en">Colecciones (en inglés)</Link>
+    <main className="ms-page" lang="es-MX">
+      <div className="ms-eyebrow">
+        <span className="ms-label">Ciudad de México</span>
+        <span className="ms-num">
+          {all.length} restaurantes · <Link href="/collections" className="ms-link" hrefLang="en">Colecciones (en inglés)</Link>
         </span>
       </div>
-      <h1 className="ds-title">Restaurantes de la Ciudad de México</h1>
+      <h1 className="ms-title">Restaurantes de la Ciudad de México</h1>
       <Suspense>
         <RestaurantIndex tiles={tiles} locale="es" />
       </Suspense>

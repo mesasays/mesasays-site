@@ -127,7 +127,7 @@ export function CurrencyToggle({ es }: { es: boolean }) {
     ? `Dólares aproximados, tipo de cambio BCE del ${fx.date}. Las cartas se cobran en pesos.`
     : `Approximate dollars, ECB rate of ${fx.date}. Menus are charged in pesos.`;
   return (
-    <span className="ds-currency-seg" role="group" aria-label={es ? "Moneda" : "Currency"} title={note} data-no-fx>
+    <span className="ms-currency" role="group" aria-label={es ? "Moneda" : "Currency"} title={note} data-no-fx>
       {(["MXN", "USD"] as const).map((code) => (
         <button key={code} type="button" aria-pressed={code === currency} onClick={() => setCurrency(code)}>
           {code}

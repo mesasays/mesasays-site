@@ -9,7 +9,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 async function loadFonts() {
-  const dir = join(process.cwd(), "vendor/deepstate/fonts");
+  const dir = join(process.cwd(), "app/fonts");
   const [sans, mono] = await Promise.all([
     readFile(join(dir, "space-grotesk-700.ttf")),
     readFile(join(dir, "space-mono-700.ttf")),

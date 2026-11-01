@@ -5,8 +5,8 @@ import { paths, type Locale } from "@/lib/i18n";
 import { matchesQuery } from "@/lib/search";
 import { CurrencyToggle, useCurrency, usd } from "@/components/CurrencySwitch";
 
-// The home page's one task module, built like deepstate.sh's swap panel:
-// mode tabs, numbered fields, a rate line, one black action.
+// The home page's finder: three search modes (budget, dish, name), numbered steps,
+// a one-line summary and a single action.
 // Plain links on purpose: a full page load shows the browser's own progress bar,
 // where a client-side transition gave no feedback on slow phones.
 
@@ -77,14 +77,13 @@ export function HomeFinder({
   }, [query, places]);
 
   return (
-    <section className="ds-panel ds-finder" aria-label={c.tabs.join(" / ")}>
-      <div className="deepstate-mode-tabs ds-seg">
+    <section className="ms-box ms-finder" aria-label={c.tabs.join(" / ")}>
+      <div className="ms-finder-tabs">
         {c.tabs.map((label, index) => (
           <button
             key={label}
             type="button"
             aria-pressed={mode === index}
-            className={mode === index ? "is-active" : undefined}
             onClick={() => setMode(index)}
           >
             {label}
@@ -92,17 +91,16 @@ export function HomeFinder({
         ))}
       </div>
 
-      <div className="deepstate-swap-form">
+      <div className="ms-finder-body">
         {mode === 0 && band ? (
           <>
-            <div className="ds-field">
-              <div className="ds-field-meta has-toggle"><span>01 · {c.budget}</span><CurrencyToggle es={locale === "es"} /></div>
-              <div className="ds-seg ds-finder-choices">
+            <div className="ms-step">
+              <div className="ms-step-label"><span>01 · {c.budget}</span><CurrencyToggle es={locale === "es"} /></div>
+              <div className="ms-budget-choices">
                 {bands.map((entry, index) => (
                   <button
                     key={entry.key}
                     type="button"
-                    className={index === bandIndex ? "is-active" : undefined}
                     aria-pressed={index === bandIndex}
                     aria-label={entry.name}
                     onClick={() => {
@@ -115,11 +113,11 @@ export function HomeFinder({
                 ))}
               </div>
             </div>
-            <div className="deepstate-flip-row"><span className="ds-flip" aria-hidden="true">↓</span></div>
+            <div className="ms-step-link"><span className="ms-step-arrow" aria-hidden="true">↓</span></div>
             {band.areas.length ? (
-              <label className="ds-field">
-                <div className="ds-field-meta"><span>02 · {c.area}</span></div>
-                <select className="ds-input" value={areaHref} onChange={(event) => setAreaHref(event.target.value)}>
+              <label className="ms-step">
+                <div className="ms-step-label"><span>02 · {c.area}</span></div>
+                <select className="ms-input" value={areaHref} onChange={(event) => setAreaHref(event.target.value)}>
                   <option value="">{c.anywhere}</option>
                   {band.areas.map((entry) => (
                     <option key={entry.href} value={entry.href}>
@@ -130,59 +128,59 @@ export function HomeFinder({
               </label>
             ) : (
               // Too few places at this budget to split by neighbourhood: say so instead of an empty list.
-              <div className="ds-field">
-                <div className="ds-field-meta"><span>02 · {c.area}</span></div>
-                <p className="ds-finder-static">{c.anywhere}</p>
-                <div className="ds-field-meta" style={{ marginBottom: 0 }}><span>{c.fewPlaces}</span></div>
+              <div className="ms-step">
+                <div className="ms-step-label"><span>02 · {c.area}</span></div>
+                <p className="ms-finder-static">{c.anywhere}</p>
+                <div className="ms-step-label" style={{ marginBottom: 0 }}><span>{c.fewPlaces}</span></div>
               </div>
             )}
-            <div className="ds-rate" aria-live="polite">
+            <div className="ms-finder-summary" aria-live="polite">
               <span>{c.places(area?.count ?? band.count)}</span>
               <span>{c.note}</span>
             </div>
-            <a href={(area?.href ?? band.href)} className="ds-cta">{c.cta}</a>
+            <a href={(area?.href ?? band.href)} className="ms-button">{c.cta}</a>
           </>
         ) : null}
 
         {mode === 1 ? (
           <>
-            <label className="ds-field">
-              <div className="ds-field-meta"><span>01 · {c.dish}</span></div>
-              <select className="ds-input" value={dishSlug} onChange={(event) => setDishSlug(event.target.value)}>
+            <label className="ms-step">
+              <div className="ms-step-label"><span>01 · {c.dish}</span></div>
+              <select className="ms-input" value={dishSlug} onChange={(event) => setDishSlug(event.target.value)}>
                 {dishes.map((entry) => (
                   <option key={entry.slug} value={entry.slug}>{entry.name}</option>
                 ))}
               </select>
             </label>
             {dish ? (
-              <div className="ds-rate" aria-live="polite">
+              <div className="ms-finder-summary" aria-live="polite">
                 <span>{c.places(dish.restaurants)}</span>
                 <span>{dish.from ? c.from(dish.from) : ""}</span>
               </div>
             ) : null}
-            {dish ? <a href={paths.dish(dish.slug, locale)} className="ds-cta">{c.dishCta}</a> : null}
+            {dish ? <a href={paths.dish(dish.slug, locale)} className="ms-button">{c.dishCta}</a> : null}
           </>
         ) : null}
 
         {mode === 2 ? (
           <>
-            <label className="ds-field">
-              <div className="ds-field-meta"><span>01 · {c.name}</span></div>
-              <input className="ds-input" value={query} autoComplete="off" onChange={(event) => setQuery(event.target.value)} />
+            <label className="ms-step">
+              <div className="ms-step-label"><span>01 · {c.name}</span></div>
+              <input className="ms-input" value={query} autoComplete="off" onChange={(event) => setQuery(event.target.value)} />
             </label>
             <div aria-live="polite">
             {query.trim().length >= 2 ? (
               matches.length ? (
-                <ul className="ds-list ds-finder-results">
+                <ul className="ms-list ms-finder-results">
                   {matches.map((place) => (
                     <li key={place.slug}>
-                      <a href={paths.restaurant(place.slug, locale)} className="ds-link">{place.name}</a>
-                      {place.area ? <span className="num"> · {place.area}</span> : null}
+                      <a href={paths.restaurant(place.slug, locale)} className="ms-link">{place.name}</a>
+                      {place.area ? <span className="ms-num"> · {place.area}</span> : null}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <div className="ds-rate"><span>{c.noMatch}</span></div>
+                <div className="ms-finder-summary"><span>{c.noMatch}</span></div>
               )
             ) : null}
             </div>

@@ -1,0 +1,73 @@
+/* MesaSays design tokens.
+ * Everything visual is decided here; mesa.css only refers to these names.
+ * Ink on paper, square corners, 1.5px rules, one agave-green accent.
+ */
+
+:root {
+  color-scheme: only light;
+
+  /* Colour */
+  --ms-ink: #000;
+  --ms-paper: #fbf9f4; /* warm "masa" paper (was pure white) */
+  --ms-field: #fff; /* inputs and finder controls stay white so they read as fields */
+  --ms-agave: #1f5c47; /* the accent: booking, meal price, link hover, wordmark dot */
+  --ms-link-hover: var(--ms-agave);
+  --ms-agave-wash: #f1f7f3; /* faint tint behind results and quick answers */
+  --ms-instagram: #d81f5e;
+  --ms-error: #a3261c;
+
+  /* Rules */
+  --ms-rule: 1.5px;
+  --ms-line: var(--ms-rule) solid var(--ms-ink);
+  --ms-hairline: 1px solid var(--ms-ink);
+
+  /* Type */
+  --ms-font-sans: "Space Grotesk", system-ui, sans-serif;
+  --ms-font-mono: "Space Mono", ui-monospace, monospace;
+
+  --ms-text-2xs: 11px; /* labels, captions, figures */
+  --ms-text-xs: 12px; /* nav, small mono */
+  --ms-text-sm: 13px;
+  --ms-text-md: 14px; /* body copy in lists and buttons */
+  --ms-text-base: 15px;
+  --ms-text-lg: 16px;
+  --ms-text-xl: 20px; /* section headings */
+  --ms-text-2xl: 24px; /* page titles, wordmark */
+  --ms-text-input: 18px;
+  --ms-text-display: 26px; /* the finder's typed name */
+
+  --ms-track-tight: 0.02em;
+  --ms-track-snug: 0.04em; /* titles */
+  --ms-track-small-caps: 0.06em; /* table heads, phone buttons */
+  --ms-track-caps: 0.08em; /* wordmark, phone nav */
+  --ms-track-label: 0.1em; /* mono labels */
+  --ms-track-loose: 0.12em; /* byline and header counts */
+  --ms-track-wide: 0.14em; /* nav, tabs, buttons */
+
+  /* Space (a 4px grid with a few in-between steps) */
+  --ms-space-1: 4px;
+  --ms-space-2: 8px;
+  --ms-space-3: 12px;
+  --ms-space-4: 16px;
+  --ms-space-5: 24px;
+  --ms-space-6: 32px;
+  --ms-space-7: 56px;
+
+  /* Layout */
+  --ms-gutter: 24px;
+  --ms-page-end: 80px;
+  --ms-page-max: 1000px;
+  --ms-finder-max: 452px;
+  --ms-measure: 42rem;
+  --ms-control: 34px; /* nav and fact-row height */
+  --ms-touch: 40px; /* phone controls */
+  --ms-masthead-pad: 20px;
+}
+
+@media (width <= 760px) {
+  :root {
+    --ms-gutter: 12px;
+    --ms-page-end: 48px;
+    --ms-masthead-pad: 14px;
+  }
+}

@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
   },
   outputFileTracingIncludes: {
     "*": [
+      "./app/fonts/*.ttf",
       "./restaurant-intelligence/v1/site-data/**",
       "./restaurant-intelligence/v1/enriched/**",
       "./restaurant-intelligence/v1/menus/**",

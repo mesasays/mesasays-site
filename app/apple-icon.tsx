@@ -8,7 +8,7 @@ export const contentType = "image/png";
 
 async function loadFont() {
   const data = await readFile(
-    join(process.cwd(), "vendor/deepstate/fonts/space-grotesk-700.ttf"),
+    join(process.cwd(), "app/fonts/space-grotesk-700.ttf"),
   );
   return [{ name: "Space Grotesk", data, weight: 700 as const, style: "normal" as const }];
 }

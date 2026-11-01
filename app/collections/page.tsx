@@ -24,26 +24,26 @@ export default async function CollectionsPage() {
   }, new Map<string, typeof collections>());
 
   return (
-    <main className="ds-page">
+    <main className="ms-page">
       <JsonLd data={collectionsIndexJsonLd(collections)} />
-      <div className="ds-kicker-row">
-        <span className="ds-label">{SITE_CITY}</span>
-        <span className="num">{collections.length}</span>
+      <div className="ms-eyebrow">
+        <span className="ms-label">{SITE_CITY}</span>
+        <span className="ms-num">{collections.length}</span>
       </div>
-      <h1 className="ds-title">Collections</h1>
+      <h1 className="ms-title">Collections</h1>
       {[...grouped.entries()].map(([type, items]) => (
-        <section key={type} className="ds-panel">
-          <div className="ds-panel-head">
-            <span className="ds-label">{collectionTypeLabel(type)}</span>
-            <span className="num">{items.length}</span>
+        <section key={type} className="ms-box">
+          <div className="ms-box-head">
+            <span className="ms-label">{collectionTypeLabel(type)}</span>
+            <span className="ms-num">{items.length}</span>
           </div>
-          <ul className="ds-list">
+          <ul className="ms-list">
             {items.map((collection) => (
               <li key={collection.id}>
-                <Link href={collectionHref(collection)} className="ds-link">
+                <Link href={collectionHref(collection)} className="ms-link">
                   {collection.label}
                 </Link>
-                <span className="num"> · {collection.restaurantCount}</span>
+                <span className="ms-num"> · {collection.restaurantCount}</span>
               </li>
             ))}
           </ul>

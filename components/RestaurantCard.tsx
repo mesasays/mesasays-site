@@ -29,8 +29,8 @@ function Row({
 }) {
   if (value === null || value === undefined || value === "") return null;
   return (
-    <div className="ds-row">
-      <span className="ds-label">{label}</span>
+    <div className="ms-fact">
+      <span className="ms-label">{label}</span>
       <span>{value}</span>
     </div>
   );
@@ -105,30 +105,30 @@ export function RestaurantCard({
   );
   const TitleTag = variant === "page" ? "h1" : "h2";
   const title = (
-    <TitleTag className={variant === "page" ? "ds-title" : "ds-card-name"}>
+    <TitleTag className={variant === "page" ? "ms-title" : "ms-card-name"}>
       {restaurant.name}
     </TitleTag>
   );
 
   return (
-    <article className="ds-panel">
+    <article className="ms-box">
       {showTitle ? (
-      <div className="ds-panel-head">
-        <span className="ds-label">
+      <div className="ms-box-head">
+        <span className="ms-label">
           {restaurant.location.neighborhood ?? "Mexico City"}
         </span>
-        <span className="num">{price ?? "\u00a0"}</span>
+        <span className="ms-num">{price ?? "\u00a0"}</span>
       </div>
       ) : null}
 
       {showTitle ? (
-      <div className="ds-pad ds-card-title">
+      <div className="ms-inset ms-card-title">
         {variant === "page" ? (
           title
         ) : (
           <Link
             href={`${paths.restaurant(restaurant.slug, locale)}${hrefHash ? `#${hrefHash}` : ""}`}
-            className="ds-card-title-link"
+            className="ms-card-link"
           >
             {title}
           </Link>
@@ -141,13 +141,13 @@ export function RestaurantCard({
           <Row label={s.cuisine} value={cuisine} />
           <Row
             label={s.mealForOne}
-            value={meal ? <strong className="ds-key-price">≈ {pesos(meal.estimate)}</strong> : null}
+            value={meal ? <strong className="ms-meal-price">≈ {pesos(meal.estimate)}</strong> : null}
           />
           <Row label="Michelin" value={michelin} />
           {!michelin ? <Row label="World's 50 Best" value={fiftyBest} /> : null}
           <Row
             label={locale === "es" ? "Película" : "Film"}
-            value={filmUrl ? <External href={filmUrl} className="ds-link">The Dining Dispatch ↗</External> : null}
+            value={filmUrl ? <External href={filmUrl} className="ms-link">The Dining Dispatch ↗</External> : null}
           />
         </>
       ) : null}
@@ -160,7 +160,7 @@ export function RestaurantCard({
         label={s.address}
         value={
           restaurant.location.address && maps ? (
-            <External href={maps} className="ds-link">
+            <External href={maps} className="ms-link">
               {restaurant.location.address}
             </External>
           ) : (
@@ -173,7 +173,7 @@ export function RestaurantCard({
         label={s.phone}
         value={
           restaurant.contact.phone ? (
-            <a className="ds-link" href={`tel:${restaurant.contact.phone.replace(/\s+/g, "")}`}>
+            <a className="ms-link" href={`tel:${restaurant.contact.phone.replace(/\s+/g, "")}`}>
               {restaurant.contact.phone}
             </a>
           ) : null
@@ -183,7 +183,7 @@ export function RestaurantCard({
         label={s.website}
         value={
           website ? (
-            <External href={website} className="ds-link">
+            <External href={website} className="ms-link">
               {s.officialSite}
             </External>
           ) : null
@@ -193,7 +193,7 @@ export function RestaurantCard({
         label="Instagram"
         value={
           instagram ? (
-            <External href={instagram} className="ds-link">
+            <External href={instagram} className="ms-link">
               {handle}
             </External>
           ) : null
@@ -201,12 +201,12 @@ export function RestaurantCard({
       />
 
       {restaurant.experience.hours.length > 0 ? (
-        <details className="ds-hours">
+        <details className="ms-fold">
           <summary>
-            <span className="ds-label">{s.hours}</span>
-            <span className="ds-hours-arrow" aria-hidden="true" />
+            <span className="ms-label">{s.hours}</span>
+            <span className="ms-fold-chevron" aria-hidden="true" />
           </summary>
-          <div className="ds-hours-list">
+          <div className="ms-hours">
             {restaurant.experience.hours.map((row) => (
               <span key={row}>{formatHoursRow(row)}</span>
             ))}
@@ -215,7 +215,7 @@ export function RestaurantCard({
       ) : null}
 
       <Row label={s.cuisine} value={cuisine} />
-      <Row label={s.price} value={price ? <span className="num">{price}</span> : null} />
+      <Row label={s.price} value={price ? <span className="ms-num">{price}</span> : null} />
 
       {hasDistinctions ? (
         <>
@@ -247,19 +247,19 @@ export function RestaurantCard({
 
       {/* On the record page, booking/call/Instagram live in the quick answers; only the source menu link stays here. */}
       {showMenuButton || (compact && (booking || igButton)) ? (
-        <div className="ds-card-actions">
+        <div className="ms-actions">
           {showMenuButton ? (
             restaurant.menu.publication ? (
-              <Link href={`${paths.restaurant(restaurant.slug, locale)}#menu`} className="ds-cta">{s.menu}</Link>
-            ) : <External href={menuUrl!} className="ds-cta">{s.menuSource}</External>
+              <Link href={`${paths.restaurant(restaurant.slug, locale)}#menu`} className="ms-button">{s.menu}</Link>
+            ) : <External href={menuUrl!} className="ms-button">{s.menuSource}</External>
           ) : null}
           {compact && booking ? (
-            <External href={booking} className="ds-cta ds-cta-book">
+            <External href={booking} className="ms-button ms-button-book">
               Booking
             </External>
           ) : null}
           {compact && igButton ? (
-            <External href={igButton} className="ds-cta ds-cta-ig">Instagram</External>
+            <External href={igButton} className="ms-button ms-button-ig">Instagram</External>
           ) : null}
         </div>
       ) : null}

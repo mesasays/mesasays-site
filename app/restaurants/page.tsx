@@ -20,15 +20,15 @@ export default async function RestaurantIndexPage() {
   const tiles = tilesFor(restaurants, index, "en").sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <main className="ds-page">
+    <main className="ms-page">
       <JsonLd data={catalogJsonLd(restaurants.length, restaurants)} />
-      <div className="ds-kicker-row">
-        <span className="ds-label">{SITE_CITY}</span>
-        <span className="num">
-          {restaurants.length} restaurants · <Link href="/collections" className="ds-link">Collections</Link>
+      <div className="ms-eyebrow">
+        <span className="ms-label">{SITE_CITY}</span>
+        <span className="ms-num">
+          {restaurants.length} restaurants · <Link href="/collections" className="ms-link">Collections</Link>
         </span>
       </div>
-      <h1 className="ds-title">Restaurants in {SITE_CITY}</h1>
+      <h1 className="ms-title">Restaurants in {SITE_CITY}</h1>
       <Suspense>
         <RestaurantIndex tiles={tiles} locale="en" />
       </Suspense>

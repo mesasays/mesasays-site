@@ -21,15 +21,15 @@ const lang = (locale: Locale) => (locale === "es" ? "es-MX" : undefined);
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="ds-panel" style={{ marginBottom: 16 }}>
-      <div className="ds-panel-head"><span className="ds-label">{title}</span></div>
-      <div className="ds-prose" style={{ padding: "10px 12px" }}>{children}</div>
+    <section className="ms-box" style={{ marginBottom: 16 }}>
+      <div className="ms-box-head"><span className="ms-label">{title}</span></div>
+      <div className="ms-prose" style={{ padding: "10px 12px" }}>{children}</div>
     </section>
   );
 }
 
 const External = ({ href, children }: { href: string; children: React.ReactNode }) => (
-  <a href={href} className="ds-link" target="_blank" rel="noreferrer">{children}</a>
+  <a href={href} className="ms-link" target="_blank" rel="noreferrer">{children}</a>
 );
 
 export function AboutView({ counts, films, locale }: { counts: CatalogCounts; films: Film[]; locale: Locale }) {
@@ -49,11 +49,11 @@ export function AboutView({ counts, films, locale }: { counts: CatalogCounts; fi
     },
   };
   return (
-    <main className="ds-page" lang={lang(locale)}>
+    <main className="ms-page" lang={lang(locale)}>
       <JsonLd data={page} />
-      <div className="ds-kicker-row"><span className="ds-label">{es ? "Quiénes somos" : "About"}</span></div>
-      <h1 className="ds-title">{es ? `${SITE_NAME}, por ${PUBLISHER_NAME}` : `${SITE_NAME}, by ${PUBLISHER_NAME}`}</h1>
-      <p className="ds-lede">
+      <div className="ms-eyebrow"><span className="ms-label">{es ? "Quiénes somos" : "About"}</span></div>
+      <h1 className="ms-title">{es ? `${SITE_NAME}, por ${PUBLISHER_NAME}` : `${SITE_NAME}, by ${PUBLISHER_NAME}`}</h1>
+      <p className="ms-lede">
         {es
           ? `${SITE_NAME} es una guía de hechos sobre los restaurantes de la Ciudad de México: cuánto cuesta comer, cómo reservar, dónde están y qué hay en la carta, cada dato verificado en la fuente oficial y fechado. Hoy: ${n(counts.restaurants)} restaurantes, ${n(counts.menus)} cartas oficiales y ${n(counts.prices)} precios verificados.`
           : `${SITE_NAME} is a fact guide to Mexico City restaurants: what a meal costs, how to book, where they are and what is on the menu, every fact checked on the official source and dated. Today: ${n(counts.restaurants)} restaurants, ${n(counts.menus)} official menus and ${n(counts.prices)} checked prices.`}
@@ -68,7 +68,7 @@ export function AboutView({ counts, films, locale }: { counts: CatalogCounts; fi
         <p>
           YouTube: <External href={CHANNEL_URL}>@TheDiningDispatch</External> · Instagram:{" "}
           <External href={INSTAGRAM_URL}>{INSTAGRAM_HANDLE}</External> ·{" "}
-          <Link href={paths.films(locale) as never} className="ds-link">
+          <Link href={paths.films(locale) as never} className="ms-link">
             {es ? `${films.length} películas en la Ciudad de México` : `${films.length} Mexico City films`}
           </Link>
         </p>
@@ -90,19 +90,24 @@ export function AboutView({ counts, films, locale }: { counts: CatalogCounts; fi
       <Panel title={es ? "Correcciones" : "Corrections"}>
         <p>
           {es
-            ? <>¿Un precio cambió, un restaurante cerró o un enlace está mal? Escríbenos por Instagram a <External href={INSTAGRAM_URL}>{INSTAGRAM_HANDLE}</External>. Verificamos en la fuente oficial y la corrección aparece fechada en <Link href={paths.updates(locale) as never} className="ds-link">novedades</Link>.</>
-            : <>A price changed, a restaurant closed or a link is wrong? Message us on Instagram at <External href={INSTAGRAM_URL}>{INSTAGRAM_HANDLE}</External>. We check the official source and the fix appears, dated, in the <Link href={paths.updates(locale) as never} className="ds-link">change log</Link>.</>}
+            ? <>¿Un precio cambió, un restaurante cerró o un enlace está mal? Escríbenos por Instagram a <External href={INSTAGRAM_URL}>{INSTAGRAM_HANDLE}</External>. Verificamos en la fuente oficial y la corrección aparece fechada en <Link href={paths.updates(locale) as never} className="ms-link">novedades</Link>.</>
+            : <>A price changed, a restaurant closed or a link is wrong? Message us on Instagram at <External href={INSTAGRAM_URL}>{INSTAGRAM_HANDLE}</External>. We check the official source and the fix appears, dated, in the <Link href={paths.updates(locale) as never} className="ms-link">change log</Link>.</>}
         </p>
       </Panel>
 
       <Panel title={es ? "Datos abiertos" : "Open data"}>
         <p>
           {es ? "Todo el catálogo se puede descargar en " : "The whole catalog can be downloaded as "}
-          <a href="/data/restaurants.json" className="ds-link">JSON</a>
+          <a href="/data/restaurants.json" className="ms-link">JSON</a>
           {es
             ? " bajo licencia CC BY 4.0 (cita a Mesasays). Cada restaurante tiene también una ficha en texto plano en /facts/<slug>.txt."
             : " under a CC BY 4.0 licence (credit Mesasays). Every restaurant also has a plain-text fact sheet at /facts/<slug>.txt."}{" "}
-          <Link href={paths.methodology(locale) as never} className="ds-link">{es ? "Cómo verificamos" : "How we check"} <span aria-hidden="true">→</span></Link>
+          <Link href={paths.methodology(locale) as never} className="ms-link">{es ? "Cómo verificamos" : "How we check"} <span aria-hidden="true">→</span></Link>
+        </p>
+        <p>
+          {es
+            ? "Dirección visual inspirada en deepstate.sh; todo el código fue escrito de forma independiente por MesaSays."
+            : "Visual direction inspired by deepstate.sh; all code written independently by MesaSays."}
         </p>
       </Panel>
     </main>
@@ -132,13 +137,13 @@ export function MethodologyView({ counts, locale }: { counts: CatalogCounts; loc
         ["What we do not do", "We do not get around bot protection or CAPTCHAs: if a page blocks the check, the fact is not published. We buy no data and fill no gaps by guessing. A closed restaurant is removed and the closure is logged in the change log."],
       ];
   return (
-    <main className="ds-page" lang={lang(locale)}>
-      <div className="ds-kicker-row">
-        <span className="ds-label">{es ? "Metodología" : "Methodology"}</span>
-        {checked ? <span className="num">{es ? "última verificación" : "last check"} {checked}</span> : null}
+    <main className="ms-page" lang={lang(locale)}>
+      <div className="ms-eyebrow">
+        <span className="ms-label">{es ? "Metodología" : "Methodology"}</span>
+        {checked ? <span className="ms-num">{es ? "última verificación" : "last check"} {checked}</span> : null}
       </div>
-      <h1 className="ds-title">{es ? "Cómo verificamos cada restaurante" : "How every restaurant is checked"}</h1>
-      <p className="ds-lede">
+      <h1 className="ms-title">{es ? "Cómo verificamos cada restaurante" : "How every restaurant is checked"}</h1>
+      <p className="ms-lede">
         {es
           ? `Cada dato de ${SITE_NAME} tiene una fuente oficial y una fecha. Así se construyen las ${counts.restaurants} fichas.`
           : `Every fact on ${SITE_NAME} has an official source and a date. This is how the ${counts.restaurants} records are built.`}
@@ -146,10 +151,10 @@ export function MethodologyView({ counts, locale }: { counts: CatalogCounts; loc
       {sections.map(([title, text]) => (
         <Panel key={title} title={title}><p>{text}</p></Panel>
       ))}
-      <p className="num">
-        <Link href={paths.about(locale) as never} className="ds-link">{es ? "Quiénes somos" : "About"}</Link> ·{" "}
-        <Link href={paths.budget(locale) as never} className="ds-link">{es ? "Comer según tu presupuesto" : "Eat on a budget"}</Link> ·{" "}
-        <Link href={paths.prices(locale) as never} className="ds-link">{es ? "Índice de precios" : "Price index"}</Link>
+      <p className="ms-num">
+        <Link href={paths.about(locale) as never} className="ms-link">{es ? "Quiénes somos" : "About"}</Link> ·{" "}
+        <Link href={paths.budget(locale) as never} className="ms-link">{es ? "Comer según tu presupuesto" : "Eat on a budget"}</Link> ·{" "}
+        <Link href={paths.prices(locale) as never} className="ms-link">{es ? "Índice de precios" : "Price index"}</Link>
       </p>
     </main>
   );
@@ -184,20 +189,20 @@ export function FilmsView({
     })),
   };
   return (
-    <main className="ds-page" lang={lang(locale)}>
+    <main className="ms-page" lang={lang(locale)}>
       <JsonLd data={list} />
-      <div className="ds-kicker-row">
-        <span className="ds-label">{es ? "Películas" : "Films"}</span>
-        <span className="num">{films.length}</span>
+      <div className="ms-eyebrow">
+        <span className="ms-label">{es ? "Películas" : "Films"}</span>
+        <span className="ms-num">{films.length}</span>
       </div>
-      <h1 className="ds-title">{es ? "Restaurantes de la Ciudad de México, filmados" : "Mexico City restaurants, filmed"}</h1>
-      <p className="ds-lede">
+      <h1 className="ms-title">{es ? "Restaurantes de la Ciudad de México, filmados" : "Mexico City restaurants, filmed"}</h1>
+      <p className="ms-lede">
         {es
           ? <>Documentales de {PUBLISHER_NAME}: un día en la cocina, del mercado al servicio. Cada película lleva a la ficha verificada del restaurante. Más en <External href={CHANNEL_URL}>YouTube</External> e <External href={INSTAGRAM_URL}>Instagram</External>.</>
           : <>Documentaries by {PUBLISHER_NAME}: a day in the kitchen, from the market to service. Each film links to the restaurant&apos;s checked record. More on <External href={CHANNEL_URL}>YouTube</External> and <External href={INSTAGRAM_URL}>Instagram</External>.</>}
       </p>
-      <section className="ds-panel">
-        <ul className="ds-list">
+      <section className="ms-box">
+        <ul className="ms-list">
           {films.map((film) => (
             <li key={film.videoId} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
               <a href={`https://www.youtube.com/watch?v=${film.videoId}`} target="_blank" rel="noreferrer" style={{ flex: "0 0 160px" }}>
@@ -207,10 +212,10 @@ export function FilmsView({
               <div>
                 <External href={`https://www.youtube.com/watch?v=${film.videoId}`}><strong>{film.title}</strong></External>
                 <br />
-                <span className="num">{formatDate(film.publishedAt, locale)} · {Math.round(film.durationSeconds / 60)} min</span>
+                <span className="ms-num">{formatDate(film.publishedAt, locale)} · {Math.round(film.durationSeconds / 60)} min</span>
                 <br />
                 {film.summary}{" "}
-                <Link href={paths.restaurant(film.restaurantSlug, locale) as never} className="ds-link">
+                <Link href={paths.restaurant(film.restaurantSlug, locale) as never} className="ms-link">
                   {names[film.restaurantSlug] ?? film.restaurantSlug} <span aria-hidden="true">→</span>
                 </Link>
               </div>

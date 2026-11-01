@@ -76,22 +76,22 @@ export function DishesIndexView({ dishes, locale }: { dishes: DishSummary[]; loc
     })),
   };
   return (
-    <main className="ds-page" lang={locale === "es" ? "es-MX" : undefined}>
+    <main className="ms-page" lang={locale === "es" ? "es-MX" : undefined}>
       <JsonLd data={jsonLd} />
-      <div className="ds-kicker-row">
-        <span className="ds-label">{c.kicker}</span>
-        <span className="num">{c.count(dishes.length)}</span>
+      <div className="ms-eyebrow">
+        <span className="ms-label">{c.kicker}</span>
+        <span className="ms-num">{c.count(dishes.length)}</span>
       </div>
-      <h1 className="ds-title">{c.title}</h1>
+      <h1 className="ms-title">{c.title}</h1>
       {/* Same boxed tiles as the restaurant lists: the whole box is the link. */}
-      <ul className="ds-tiles">
+      <ul className="ms-tiles">
         {dishes.map((dish) => (
           <li key={dish.slug}>
-            <Link prefetch={false} href={paths.dish(dish.slug, locale)} className="ds-tile">
-              <strong className="ds-tile-name">{dishName(dish, locale)}</strong>
-              <span className="ds-tile-meta">{c.restaurantsCount(dish.restaurants)}</span>
-              {dish.minPrice !== null ? <span className="ds-tile-note">{c.lowest} {pesos(dish.minPrice)}</span> : null}
-              <span className="ds-tile-price">{dish.medianPrice !== null ? `${c.medianShort} ${pesos(dish.medianPrice)}` : "\u00a0"}</span>
+            <Link prefetch={false} href={paths.dish(dish.slug, locale)} className="ms-tile">
+              <strong className="ms-tile-name">{dishName(dish, locale)}</strong>
+              <span className="ms-tile-meta">{c.restaurantsCount(dish.restaurants)}</span>
+              {dish.minPrice !== null ? <span className="ms-tile-note">{c.lowest} {pesos(dish.minPrice)}</span> : null}
+              <span className="ms-tile-price">{dish.medianPrice !== null ? `${c.medianShort} ${pesos(dish.medianPrice)}` : "\u00a0"}</span>
             </Link>
           </li>
         ))}
@@ -144,13 +144,13 @@ export function DishView({ dish, locale }: { dish: DishSummary; locale: Locale }
     })),
   };
   return (
-    <main className="ds-page" lang={locale === "es" ? "es-MX" : undefined}>
+    <main className="ms-page" lang={locale === "es" ? "es-MX" : undefined}>
       <JsonLd data={jsonLd} />
-      <div className="ds-kicker-row">
-        <Link prefetch={false} href={paths.dishes(locale)} className="ds-link">{c.back}</Link>
+      <div className="ms-eyebrow">
+        <Link prefetch={false} href={paths.dishes(locale)} className="ms-link">{c.back}</Link>
       </div>
-      <h1 className="ds-title">{c.dishTitle(name)}</h1>
-      <p className="ds-lede num">
+      <h1 className="ms-title">{c.dishTitle(name)}</h1>
+      <p className="ms-lede ms-num">
         {c.restaurantsCount(dish.restaurants)}
         {dish.minPrice !== null ? ` · ${c.from} ${pesos(dish.minPrice)}` : ""}
       </p>

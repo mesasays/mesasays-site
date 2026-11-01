@@ -26,16 +26,16 @@ export function RestaurantTiles({
   showArea?: boolean;
 }) {
   return (
-    <ul className="ds-tiles">
+    <ul className="ms-tiles">
       {tiles.map((tile) => (
         <li key={tile.slug}>
-          <Link href={paths.restaurant(tile.slug, locale) as never} className="ds-tile" prefetch={false}>
-            <strong className="ds-tile-name">{tile.name}</strong>
-            <span className="ds-tile-meta">
+          <Link href={paths.restaurant(tile.slug, locale) as never} className="ms-tile" prefetch={false}>
+            <strong className="ms-tile-name">{tile.name}</strong>
+            <span className="ms-tile-meta">
               {[tile.cuisine, showArea ? tile.area : null].filter(Boolean).join(" · ") || " "}
             </span>
-            {tile.note ? <span className="ds-tile-note">{tile.note}</span> : null}
-            <span className="ds-tile-price">
+            {tile.note ? <span className="ms-tile-note">{tile.note}</span> : null}
+            <span className="ms-tile-price">
               {tile.priceLabel ?? (tile.price ? `≈ ${tile.price.toLocaleString("en-US")} MXN` : " ")}
             </span>
           </Link>

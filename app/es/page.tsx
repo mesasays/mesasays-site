@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-// The home page is one task, like deepstate.sh's swap panel: say what this is, then search.
+// The home page is one task: say what this is, then help the visitor find a table.
 // Everything else lives one click away (nav, footer); structured data stays in the page.
 export default async function InicioPage() {
   const [all, films] = await Promise.all([
@@ -30,18 +30,18 @@ export default async function InicioPage() {
   const filmRestaurant = all.find((restaurant) => restaurant.slug === latestFilm?.restaurantSlug)?.name ?? null;
 
   return (
-    <main className="ds-page ds-home" lang="es-MX">
-      <h1 className="ds-title">La guía abierta de restaurantes de la Ciudad de México.</h1>
-      <p className="ds-home-punch">Ningún restaurante paga por estar aquí.</p>
+    <main className="ms-page ms-home" lang="es-MX">
+      <h1 className="ms-title">La guía abierta de restaurantes de la Ciudad de México.</h1>
+      <p className="ms-promise">Ningún restaurante paga por estar aquí.</p>
 
       <HomeFinder {...(await finderProps("es"))} locale="es" />
 
-      <p className="ds-home-more num">
-        <Link href={paths.restaurants("es") as never} className="ds-link">{all.length} restaurantes <span aria-hidden="true">→</span></Link>
+      <p className="ms-more ms-num">
+        <Link href={paths.restaurants("es") as never} className="ms-link">{all.length} restaurantes <span aria-hidden="true">→</span></Link>
         {latestFilm ? (
           <>
             {" · "}
-            <Link href={paths.restaurant(latestFilm.restaurantSlug, "es") as never} className="ds-link">
+            <Link href={paths.restaurant(latestFilm.restaurantSlug, "es") as never} className="ms-link">
               Última película: {filmRestaurant ?? latestFilm.title} <span aria-hidden="true">→</span>
             </Link>
           </>

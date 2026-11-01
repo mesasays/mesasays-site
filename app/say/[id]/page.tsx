@@ -31,7 +31,7 @@ export default async function SayThreadPage({ params }: PageProps<"/say/[id]">) 
   if (!thread) notFound();
   const places = (await Promise.all(thread.slugs.map(sayRestaurant))).filter((place): place is SayPlace => Boolean(place));
   return (
-    <main className="ds-page ds-say-page">
+    <main className="ms-page ms-say-page">
       <SayThread thread={thread} places={places} />
     </main>
   );

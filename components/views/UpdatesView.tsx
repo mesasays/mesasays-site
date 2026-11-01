@@ -26,36 +26,36 @@ const COPY = {
 export function UpdatesView({ entries, locale }: { entries: UpdateEntry[]; locale: Locale }) {
   const c = COPY[locale];
   return (
-    <main className="ds-page" lang={locale === "es" ? "es-MX" : undefined}>
-      <div className="ds-kicker-row">
-        <span className="ds-label">{c.kicker}</span>
-        <span className="num">{entries[0] ? formatDate(entries[0].date, locale) : ""}</span>
+    <main className="ms-page" lang={locale === "es" ? "es-MX" : undefined}>
+      <div className="ms-eyebrow">
+        <span className="ms-label">{c.kicker}</span>
+        <span className="ms-num">{entries[0] ? formatDate(entries[0].date, locale) : ""}</span>
       </div>
-      <h1 className="ds-title">{c.title}</h1>
-      <p className="ds-lede">{c.lede}</p>
-      <div className="ds-stack">
+      <h1 className="ms-title">{c.title}</h1>
+      <p className="ms-lede">{c.lede}</p>
+      <div className="ms-stack">
         {entries.map((entry) => (
-          <section key={entry.id} className="ds-panel" style={{ marginBottom: 16 }}>
-            <div className="ds-panel-head">
-              <span className="ds-label">
+          <section key={entry.id} className="ms-box" style={{ marginBottom: 16 }}>
+            <div className="ms-box-head">
+              <span className="ms-label">
                 {entry.kind === "added" ? c.added(entry.restaurants.length) : entry.kind === "closed" ? c.closed(entry.restaurants.length) : c.reverified}
               </span>
-              <time className="num" dateTime={entry.date}>{formatDate(entry.date, locale)}</time>
+              <time className="ms-num" dateTime={entry.date}>{formatDate(entry.date, locale)}</time>
             </div>
             {entry.kind === "reverified" && entry.counts ? (
-              <p className="ds-prose" style={{ padding: "10px 12px", margin: 0 }}>
+              <p className="ms-prose" style={{ padding: "10px 12px", margin: 0 }}>
                 {c.reverifiedDetail(entry.counts.verified, entry.counts.unverifiable)}
               </p>
             ) : (
-              <ul className="ds-list">
+              <ul className="ms-list">
                 {entry.restaurants.map((restaurant) => (
                   <li key={restaurant.slug}>
                     {entry.kind === "closed" ? (
                       <span>{restaurant.name}</span>
                     ) : (
-                      <Link prefetch={false} href={paths.restaurant(restaurant.slug, locale)} className="ds-link">{restaurant.name}</Link>
+                      <Link prefetch={false} href={paths.restaurant(restaurant.slug, locale)} className="ms-link">{restaurant.name}</Link>
                     )}
-                    {restaurant.note ? <span className="num"> · {restaurant.note}</span> : null}
+                    {restaurant.note ? <span className="ms-num"> · {restaurant.note}</span> : null}
                   </li>
                 ))}
               </ul>

@@ -17,14 +17,14 @@ export function RestaurantIndex({ tiles, locale = "en" }: { tiles: RestaurantTil
 
   return (
     <>
-      <label className="ds-field-block ds-search">
-        <span className="ds-label">{locale === "es" ? "Buscar" : "Search"}</span>
-        <input className="ds-input" value={query} autoComplete="off" onChange={(event) => setQuery(event.target.value)} />
+      <label className="ms-field-row ms-search">
+        <span className="ms-label">{locale === "es" ? "Buscar" : "Search"}</span>
+        <input className="ms-input" value={query} autoComplete="off" onChange={(event) => setQuery(event.target.value)} />
       </label>
-      <p className="ds-sr-only" aria-live="polite">
+      <p className="ms-sr-only" aria-live="polite">
         {deferred.trim() ? `${filtered.length} ${locale === "es" ? "restaurantes" : "restaurants"}` : ""}
       </p>
-      {filtered.length === 0 ? <p className="ds-empty">—</p> : <RestaurantTiles tiles={filtered} locale={locale} />}
+      {filtered.length === 0 ? <p className="ms-empty">—</p> : <RestaurantTiles tiles={filtered} locale={locale} />}
     </>
   );
 }

@@ -180,7 +180,7 @@ export function SayBlock({ place, lang = "en" }: { place: SayPlace; lang?: Lang 
     <section className="say say-block" aria-labelledby="say-title" id="say">
       <div className="say-head">
         <h2 id="say-title">{c.peopleSay}</h2>
-        <span className="ds-label num">{threads ? mine.length : ""}</span>
+        <span className="ms-label ms-num">{threads ? mine.length : ""}</span>
       </div>
       {shown.map((thread) => <ThreadCard key={thread.id} thread={thread} places={bySlug} here={place.slug} lang={lang} />)}
       {mine.length > shown.length ? (
@@ -205,7 +205,7 @@ export function SayFeed({ threads, places }: { threads: SayThreadData[]; places:
     <div className="say">
       <Composer placeholder="Ask or say something about a restaurant…" />
       <div className="say-filters">
-        <span className="ds-label">Latest</span>
+        <span className="ms-label">Latest</span>
         {areas.length ? (
           <select value={area} onChange={(event) => setArea(event.target.value)} aria-label="Neighborhood">
             <option value="">All of CDMX</option>
@@ -291,7 +291,7 @@ export function SayThread({ thread, places }: { thread: SayThreadData; places: S
       </article>
 
       <ReplyBox threadId={thread.id} parentId={null} />
-      <p className="ds-label say-count">{thread.replies.length} {thread.replies.length === 1 ? "reply" : "replies"}</p>
+      <p className="ms-label say-count">{thread.replies.length} {thread.replies.length === 1 ? "reply" : "replies"}</p>
       <ReplyTree replies={thread.replies} parentId={null} threadId={thread.id} depth={0} />
     </div>
   );

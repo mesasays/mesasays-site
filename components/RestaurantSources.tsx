@@ -9,15 +9,15 @@ export function RestaurantSources({ restaurant, locale = "en" }: { restaurant: S
   const sources = restaurantSources(restaurant);
   if (!sources.length) return null;
   return (
-    <details className="ds-hours">
+    <details className="ms-fold">
       <summary>
-        <span className="ds-label">{s.sources(sources.length)}</span>
-        <span className="ds-hours-arrow" aria-hidden="true" />
+        <span className="ms-label">{s.sources(sources.length)}</span>
+        <span className="ms-fold-chevron" aria-hidden="true" />
       </summary>
-      <ul className="ds-list ds-pad">
+      <ul className="ms-list">
         {sources.filter((source) => isPublicUrl(source.url)).map((source) => (
           <li key={source.url}>
-            <a href={source.url} className="ds-link" target="_blank" rel="noreferrer">
+            <a href={source.url} className="ms-link" target="_blank" rel="noreferrer">
               {source.label}
             </a>
             {source.recordedAt ? <span> · {s.recorded} {locale === "en" ? formatObserved(source.recordedAt) : formatDate(source.recordedAt, locale)}</span> : null}

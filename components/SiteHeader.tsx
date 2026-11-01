@@ -39,18 +39,18 @@ export function SiteHeader({ stats = null }: { stats?: HeaderStats | null }) {
   }, [open]);
 
   return (
-    <header className="deepstate-header" aria-label={es ? "Navegación del sitio" : "Site navigation"}>
-      <a href="#content" className="ds-skip">{es ? "Saltar al contenido" : "Skip to content"}</a>
-      <div className="deepstate-header-main">
-        <div className="deepstate-brand">
-          <Link prefetch={false} href={paths.home(locale)} className="deepstate-wordmark">{SITE_NAME.toUpperCase()}</Link>
+    <header className="ms-masthead" aria-label={es ? "Navegación del sitio" : "Site navigation"}>
+      <a href="#content" className="ms-skip">{es ? "Saltar al contenido" : "Skip to content"}</a>
+      <div className="ms-masthead-row">
+        <div className="ms-brand">
+          <Link prefetch={false} href={paths.home(locale)} className="ms-wordmark">{SITE_NAME.toUpperCase()}</Link>
           {/* The publisher link replaces the footer: About leads to the films, YouTube, Instagram and method. */}
-          <Link prefetch={false} href={paths.about(locale) as never} className="ds-brand-by">
+          <Link prefetch={false} href={paths.about(locale) as never} className="ms-byline">
             {locale === "es" ? "POR" : "BY"} THE DINING DISPATCH
           </Link>
         </div>
         {/* Language: a quiet switch beside the wordmark; hreflang in <head> does the search work. */}
-        <p className="ds-lang num">
+        <p className="ms-lang ms-num">
           {(["en", "es"] as const).map((code, index) => (
             <span key={code}>
               {index ? " · " : ""}
@@ -66,15 +66,15 @@ export function SiteHeader({ stats = null }: { stats?: HeaderStats | null }) {
         </p>
         <button
           type="button"
-          className="ds-menu-toggle"
+          className="ms-nav-toggle"
           aria-expanded={open}
           aria-controls="site-nav"
           onClick={() => setOpen((value) => !value)}
         >
           {open ? (locale === "es" ? "CERRAR" : "CLOSE") : "MENU"}
         </button>
-        <div className={`deepstate-header-controls${open ? " is-open" : ""}`} id="site-nav">
-          <nav className="deepstate-nav" aria-label={es ? "Principal" : "Primary"}>
+        <div className={`ms-nav-drawer${open ? " is-open" : ""}`} id="site-nav">
+          <nav className="ms-nav" aria-label={es ? "Principal" : "Primary"}>
             {nav.map((item) => {
               const active =
                 item.href === paths.home(locale)
@@ -85,7 +85,6 @@ export function SiteHeader({ stats = null }: { stats?: HeaderStats | null }) {
                   prefetch={false}
                   key={item.href}
                   href={item.href}
-                  className={active ? "is-active" : undefined}
                   aria-current={active ? "page" : undefined}
                   onClick={() => setOpen(false)}
                 >
@@ -94,15 +93,15 @@ export function SiteHeader({ stats = null }: { stats?: HeaderStats | null }) {
               );
             })}
           </nav>
-          <div className="deepstate-header-status">
-            {/* Catalog figures, in the place deepstate.sh shows its volume stats. */}
+          <div className="ms-counts">
+            {/* Catalog figures: how many places and menus, and when they were last checked. */}
             {stats
               ? [
                   [locale === "es" ? "RESTAURANTES" : "RESTAURANTS", stats.restaurants.toLocaleString("en-US")],
                   [locale === "es" ? "CARTAS" : "MENUS", stats.menus.toLocaleString("en-US")],
                   [locale === "es" ? "ACTUALIZADO" : "UPDATED", formatDate(stats.updated, locale) ?? "—"],
                 ].map(([label, value]) => (
-                  <div className="deepstate-daily-volume" key={label}>
+                  <div className="ms-count" key={label}>
                     <span>{label}</span>
                     <strong>{value}</strong>
                   </div>

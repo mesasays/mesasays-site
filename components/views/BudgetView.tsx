@@ -110,11 +110,11 @@ function itemList(rows: BudgetRow[], locale: Locale, name: string, url: string) 
 function Method({ locale }: { locale: Locale }) {
   const c = COPY[locale];
   return (
-    <details className="ds-panel ds-method" style={{ marginTop: 24 }}>
-      <summary className="ds-panel-head"><span className="ds-label">{c.method}</span></summary>
-      <p className="ds-prose" style={{ padding: "10px 12px", margin: 0 }}>
+    <details className="ms-box ms-method" style={{ marginTop: 24 }}>
+      <summary className="ms-box-head"><span className="ms-label">{c.method}</span></summary>
+      <p className="ms-prose" style={{ padding: "10px 12px", margin: 0 }}>
         {c.methodText}{" "}
-        <Link href={paths.methodology(locale) as never} className="ds-link">{c.seeMethod} <span aria-hidden="true">→</span></Link>
+        <Link href={paths.methodology(locale) as never} className="ms-link">{c.seeMethod} <span aria-hidden="true">→</span></Link>
       </p>
     </details>
   );
@@ -124,16 +124,16 @@ export function BudgetIndexView({ index, locale }: { index: BudgetIndex; locale:
   const c = COPY[locale];
   const checked = formatDate(index.latestCheck, locale);
   return (
-    <main className="ds-page" lang={locale === "es" ? "es-MX" : undefined}>
-      <div className="ds-kicker-row">
-        <span className="ds-label">{c.kicker}</span>
-        {checked ? <span className="num">{c.updated} {checked}</span> : null}
+    <main className="ms-page" lang={locale === "es" ? "es-MX" : undefined}>
+      <div className="ms-eyebrow">
+        <span className="ms-label">{c.kicker}</span>
+        {checked ? <span className="ms-num">{c.updated} {checked}</span> : null}
       </div>
-      <h1 className="ds-title">{c.indexTitle}</h1>
+      <h1 className="ms-title">{c.indexTitle}</h1>
 
-      <section className="ds-panel">
-        <div className="ds-panel-head"><span className="ds-label">{c.budgets}</span></div>
-        <table className="ds-table">
+      <section className="ms-box">
+        <div className="ms-box-head"><span className="ms-label">{c.budgets}</span></div>
+        <table className="ms-table">
           <tbody>
             {BANDS.map((band) => {
               const rows = bandRows(index, band);
@@ -141,14 +141,14 @@ export function BudgetIndexView({ index, locale }: { index: BudgetIndex; locale:
               return (
                 <tr key={bandKey(band)}>
                   <td>
-                    <Link href={budgetPath(locale, band) as never} className="ds-link"><strong>{bandLabel(band, locale)}</strong></Link>
-                    <span className="num"> · {rows.length} {c.restaurants}</span>
+                    <Link href={budgetPath(locale, band) as never} className="ms-link"><strong>{bandLabel(band, locale)}</strong></Link>
+                    <span className="ms-num"> · {rows.length} {c.restaurants}</span>
                   </td>
-                  <td className="num">
+                  <td className="ms-num">
                     {areas.map((entry, i) => (
                       <span key={entry.areaSlug}>
                         {i ? " · " : ""}
-                        <Link href={budgetPath(locale, band, entry.areaSlug) as never} className="ds-link">{entry.area}</Link> ({entry.count})
+                        <Link href={budgetPath(locale, band, entry.areaSlug) as never} className="ms-link">{entry.area}</Link> ({entry.count})
                       </span>
                     ))}
                   </td>
@@ -158,8 +158,8 @@ export function BudgetIndexView({ index, locale }: { index: BudgetIndex; locale:
           </tbody>
         </table>
       </section>
-      <p className="ds-home-more num" style={{ marginTop: 16 }}>
-        <Link href={paths.prices(locale) as never} className="ds-link">
+      <p className="ms-more ms-num" style={{ marginTop: 16 }}>
+        <Link href={paths.prices(locale) as never} className="ms-link">
           {locale === "es" ? "Índice de precios por colonia y tipo de cocina" : "Price index by neighborhood and cuisine"} <span aria-hidden="true">→</span>
         </Link>
       </p>
@@ -186,20 +186,20 @@ export function BudgetBandView({
   const where = areaName ?? c.city;
   const title = c.bandTitle(band, where);
   return (
-    <main className="ds-page" lang={locale === "es" ? "es-MX" : undefined}>
+    <main className="ms-page" lang={locale === "es" ? "es-MX" : undefined}>
       <JsonLd data={itemList(rows, locale, title, absoluteUrl(budgetPath(locale, band, areaSlug)))} />
-      <h1 className="ds-title">{title}</h1>
-      <p className="ds-lede num">{c.summary(rows.length)}</p>
+      <h1 className="ms-title">{title}</h1>
+      <p className="ms-lede ms-num">{c.summary(rows.length)}</p>
       {/* One line of neighbourhood links keeps the area pages reachable (they are in the sitemap). */}
       {areas.length ? (
-        <p className="ds-inline-links num" style={{ margin: "0 0 16px" }}>
-          <Link href={budgetPath(locale) as never} className="ds-link">{c.allBudgets}</Link>{" · "}
-          <span className="ds-label">{c.byArea}</span>{" "}
-          {areaSlug ? <><Link href={budgetPath(locale, band) as never} className="ds-link">{c.all}</Link> · </> : null}
+        <p className="ms-inline-links ms-num" style={{ margin: "0 0 16px" }}>
+          <Link href={budgetPath(locale) as never} className="ms-link">{c.allBudgets}</Link>{" · "}
+          <span className="ms-label">{c.byArea}</span>{" "}
+          {areaSlug ? <><Link href={budgetPath(locale, band) as never} className="ms-link">{c.all}</Link> · </> : null}
           {areas.filter((entry) => entry.areaSlug !== areaSlug).map((entry, i) => (
             <span key={entry.areaSlug}>
               {i ? " · " : ""}
-              <Link href={budgetPath(locale, band, entry.areaSlug) as never} className="ds-link">{entry.area}</Link>
+              <Link href={budgetPath(locale, band, entry.areaSlug) as never} className="ms-link">{entry.area}</Link>
             </span>
           ))}
         </p>

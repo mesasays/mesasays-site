@@ -32,16 +32,16 @@ export function RestaurantFilm({
     about: { "@type": "Restaurant", name: restaurantName },
   };
   return (
-    <section className="ds-panel" style={{ marginBottom: 16 }} aria-label={s.film}>
+    <section className="ms-box" style={{ marginBottom: 16 }} aria-label={s.film}>
       <JsonLd data={video} />
-      <div className="ds-panel-head">
-        <span className="ds-label">{s.film}</span>
-        <span className="num">{formatDate(film.publishedAt, locale)}</span>
+      <div className="ms-box-head">
+        <span className="ms-label">{s.film}</span>
+        <span className="ms-num">{formatDate(film.publishedAt, locale)}</span>
       </div>
       <FilmPlayer videoId={film.videoId} title={film.title} thumb={filmThumb(film.videoId)} />
-      <div className="ds-row">
-        <span className="ds-label">{film.title}</span>
-        <a href={filmUrl(film)} className="ds-link" target="_blank" rel="noreferrer">
+      <div className="ms-fact">
+        <span className="ms-label">{film.title}</span>
+        <a href={filmUrl(film)} className="ms-link" target="_blank" rel="noreferrer">
           {s.watchOnYoutube} <span aria-hidden="true">↗</span>
         </a>
       </div>

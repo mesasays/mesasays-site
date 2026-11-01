@@ -1,0 +1,1110 @@
+/* MesaSays stylesheet.
+ * Order: fonts, base, layout (shell, masthead, page), components, finder, page-specific.
+ * Breakpoints: 980px (masthead wraps) and 760px (phone).
+ * Colours, sizes and spacing come from tokens.css.
+ */
+
+/* ---------- Fonts (SIL Open Font License, see app/fonts/OFL-*.txt) ---------- */
+
+@font-face { font-family: "Space Grotesk"; font-weight: 400; font-display: swap; src: url("../fonts/space-grotesk-400.ttf") format("truetype"); }
+@font-face { font-family: "Space Grotesk"; font-weight: 500; font-display: swap; src: url("../fonts/space-grotesk-500.ttf") format("truetype"); }
+@font-face { font-family: "Space Grotesk"; font-weight: 600; font-display: swap; src: url("../fonts/space-grotesk-600.ttf") format("truetype"); }
+@font-face { font-family: "Space Grotesk"; font-weight: 700; font-display: swap; src: url("../fonts/space-grotesk-700.ttf") format("truetype"); }
+@font-face { font-family: "Space Mono"; font-weight: 400; font-display: swap; src: url("../fonts/space-mono-400.ttf") format("truetype"); }
+@font-face { font-family: "Space Mono"; font-weight: 700; font-display: swap; src: url("../fonts/space-mono-700.ttf") format("truetype"); }
+
+@keyframes ms-fade-in {
+  from { opacity: 0; }
+}
+
+/* ---------- Base: sits on top of Tailwind's preflight ---------- */
+
+@layer base {
+  html {
+    background: var(--ms-paper);
+    scrollbar-gutter: stable;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--ms-paper);
+    color: var(--ms-ink);
+    font-family: var(--ms-font-sans);
+    line-height: normal;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--ms-ink);
+    color: var(--ms-paper);
+  }
+
+  a {
+    text-underline-offset: 2px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  :is(button, input, select, textarea):focus-visible {
+    outline: 2px solid var(--ms-ink);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* ---------- Layout: shell ---------- */
+
+  .ms-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    background: var(--ms-paper);
+    animation: ms-fade-in 0.25s ease-out;
+  }
+
+  .ms-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Keyboard users get a "skip to content" link, off-screen until focused. */
+  .ms-skip {
+    position: absolute;
+    inset-block-start: -100px;
+    inset-inline-start: var(--ms-space-4);
+    z-index: 100;
+    padding: 10px 14px;
+    border: var(--ms-line);
+    background: var(--ms-paper);
+    font: var(--ms-text-xs) var(--ms-font-mono);
+    letter-spacing: var(--ms-track-label);
+    text-transform: uppercase;
+    text-decoration: none;
+
+    &:focus {
+      inset-block-start: var(--ms-space-3);
+      outline: 2px solid var(--ms-ink);
+      outline-offset: 2px;
+    }
+  }
+
+  /* ---------- Layout: masthead (wordmark, language, nav, catalogue counts) ---------- */
+
+  .ms-masthead {
+    display: flex;
+    align-items: center;
+    inline-size: 100%;
+    max-inline-size: var(--ms-page-max);
+    min-inline-size: 0;
+    margin-inline: auto;
+    padding-block: max(var(--ms-masthead-pad), env(safe-area-inset-top, 0px)) var(--ms-masthead-pad);
+    padding-inline: max(var(--ms-gutter), env(safe-area-inset-left, 0px)) max(var(--ms-gutter), env(safe-area-inset-right, 0px));
+  }
+
+  .ms-masthead-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 26px;
+    inline-size: 100%;
+    min-inline-size: 0;
+
+    @media (width <= 980px) {
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    @media (width <= 760px) {
+      gap: var(--ms-space-3);
+    }
+  }
+
+  .ms-brand {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .ms-wordmark {
+    font-size: var(--ms-text-2xl);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: var(--ms-track-caps);
+    overflow-wrap: break-word;
+    text-decoration: none;
+
+    /* An agave full stop closes the name. */
+    &::after {
+      content: "";
+      display: inline-block;
+      inline-size: 0.2em;
+      block-size: 0.2em;
+      background: var(--ms-agave);
+    }
+  }
+
+  .ms-byline {
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-2xs);
+    letter-spacing: var(--ms-track-loose);
+    white-space: nowrap;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .ms-lang {
+    align-self: center;
+    margin-inline: 20px auto;
+    font-size: var(--ms-text-2xs);
+    letter-spacing: var(--ms-track-label);
+
+    & a {
+      opacity: 0.45;
+      text-decoration: none;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    & [aria-current] {
+      font-weight: 700;
+    }
+
+    @media (width <= 760px) {
+      margin-inline: auto 0;
+    }
+  }
+
+  /* Phones: wordmark and a MENU button on one line; the nav opens below. */
+  .ms-nav-toggle {
+    display: none;
+
+    @media (width <= 760px) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      block-size: var(--ms-touch);
+      padding-inline: var(--ms-space-4);
+      border: var(--ms-line);
+      background: var(--ms-paper);
+      font-size: var(--ms-text-xs);
+      font-weight: 600;
+      letter-spacing: var(--ms-track-wide);
+
+      &[aria-expanded="true"] {
+        background: var(--ms-ink);
+        color: var(--ms-paper);
+      }
+    }
+  }
+
+  .ms-nav-drawer {
+    display: flex;
+    gap: var(--ms-space-2);
+    min-inline-size: 0;
+
+    @media (width <= 980px) {
+      flex-wrap: wrap;
+      inline-size: 100%;
+    }
+
+    @media (width <= 760px) {
+      display: none;
+
+      &.is-open {
+        display: flex;
+      }
+    }
+  }
+
+  /* Boxed tabs sharing their borders: a row on desktop, a 2-column grid on phones. */
+  .ms-nav {
+    display: flex;
+    block-size: var(--ms-control);
+
+    & a {
+      display: inline-flex;
+      align-items: center;
+      padding-inline: 15px;
+      border: var(--ms-line);
+      border-inline-end-width: 0;
+      background: var(--ms-paper);
+      font-size: var(--ms-text-xs);
+      font-weight: 600;
+      letter-spacing: var(--ms-track-wide);
+      text-transform: uppercase;
+      text-decoration: none;
+
+      &:last-child {
+        border-inline-end-width: var(--ms-rule);
+      }
+
+      &:is(:hover, :active, [aria-current="page"]) {
+        background: var(--ms-ink);
+        color: var(--ms-paper);
+      }
+    }
+
+    @media (width <= 980px) {
+      inline-size: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      & a {
+        flex: none;
+        justify-content: center;
+        padding-inline: 14px;
+      }
+    }
+
+    @media (width <= 760px) {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      block-size: auto;
+      overflow: visible;
+      padding: 0 var(--ms-rule) var(--ms-rule) 0;
+
+      & a {
+        block-size: var(--ms-touch);
+        margin: 0 calc(-1 * var(--ms-rule)) calc(-1 * var(--ms-rule)) 0;
+        padding-inline: var(--ms-space-1);
+        border-inline-end-width: var(--ms-rule);
+        font-size: var(--ms-text-2xs);
+        letter-spacing: var(--ms-track-caps);
+      }
+    }
+  }
+
+  /* Catalogue counts (restaurants, menus, last update): desktop only. */
+  .ms-counts {
+    display: flex;
+    gap: var(--ms-space-2);
+    block-size: var(--ms-control);
+
+    @media (width <= 980px) {
+      display: none;
+    }
+  }
+
+  .ms-count {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-inline: var(--ms-space-2);
+    font-family: var(--ms-font-mono);
+    line-height: 1.15;
+    white-space: nowrap;
+
+    & > span {
+      font-size: var(--ms-text-2xs);
+      letter-spacing: var(--ms-track-loose);
+    }
+
+    & > strong {
+      margin-block-start: 3px;
+      font-size: var(--ms-text-xs);
+      letter-spacing: var(--ms-track-tight);
+    }
+  }
+
+  /* ---------- Layout: page ---------- */
+
+  .ms-page {
+    flex: 1;
+    inline-size: 100%;
+    max-inline-size: var(--ms-page-max);
+    min-inline-size: 0;
+    margin-inline: auto;
+    padding-block: 0 calc(var(--ms-page-end) + env(safe-area-inset-bottom, 0px));
+    padding-inline: max(var(--ms-gutter), env(safe-area-inset-left, 0px)) max(var(--ms-gutter), env(safe-area-inset-right, 0px));
+  }
+
+  .ms-eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ms-space-4);
+    padding-block: 18px var(--ms-space-3);
+    border-block-end: var(--ms-line);
+  }
+
+  .ms-stack {
+    display: grid;
+    gap: var(--ms-space-4);
+    min-inline-size: 0;
+    margin-block-start: var(--ms-space-4);
+  }
+
+  .ms-inset {
+    padding: var(--ms-space-4);
+  }
+
+  /* ---------- Type ---------- */
+
+  .ms-num {
+    font-family: var(--ms-font-mono);
+  }
+
+  .ms-label {
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-2xs);
+    letter-spacing: var(--ms-track-label);
+    text-transform: uppercase;
+  }
+
+  .ms-title {
+    margin-block: 18px 10px;
+    font-size: var(--ms-text-2xl);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: var(--ms-track-snug);
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .ms-lede {
+    max-inline-size: var(--ms-measure);
+    margin-block: 0 var(--ms-space-5);
+    font-size: var(--ms-text-lg);
+    line-height: 1.45;
+  }
+
+  .ms-prose {
+    max-inline-size: var(--ms-measure);
+    font-size: var(--ms-text-base);
+    line-height: 1.5;
+
+    & p {
+      margin-block-end: var(--ms-space-3);
+    }
+  }
+
+  .ms-inline-links {
+    margin-block-start: var(--ms-space-4);
+    font-size: var(--ms-text-sm);
+    line-height: 1.9;
+  }
+
+  .ms-empty {
+    padding: var(--ms-space-4);
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-2xs);
+    letter-spacing: var(--ms-track-snug);
+    text-transform: uppercase;
+  }
+
+  /* Underlined by a rule rather than text-decoration; fills on hover. */
+  .ms-link {
+    border-block-end: var(--ms-line);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+
+    &:is(:hover, :active) {
+      background: var(--ms-link-hover);
+      color: var(--ms-paper);
+    }
+  }
+
+  /* ---------- Boxes: a ruled frame with an optional heading strip ---------- */
+
+  .ms-box {
+    min-inline-size: 0;
+    border: var(--ms-line);
+    background: var(--ms-box-fill, var(--ms-paper));
+  }
+
+  .ms-quick {
+    --ms-box-fill: var(--ms-agave-wash);
+  }
+
+  .ms-box-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ms-space-2);
+    min-inline-size: 0;
+    padding: var(--ms-space-3) var(--ms-space-4);
+    border-block-end: var(--ms-line);
+
+    & > .ms-label {
+      flex: 1 1 auto;
+      min-inline-size: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    & > .ms-num {
+      flex: none;
+      min-inline-size: 2.5ch;
+      font-size: var(--ms-text-2xs);
+      line-height: 1;
+      letter-spacing: var(--ms-track-label);
+      text-align: end;
+      white-space: nowrap;
+    }
+  }
+
+  /* Label on the left, value on the right; stacked on phones. */
+  .ms-fact {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--ms-space-4);
+    min-inline-size: 0;
+    min-block-size: var(--ms-control);
+    padding: var(--ms-space-3) var(--ms-space-4);
+    border-block-end: var(--ms-line);
+
+    &:last-child {
+      border-block-end: 0;
+    }
+
+    & > .ms-label {
+      flex: none;
+      white-space: nowrap;
+    }
+
+    & > :not(.ms-label) {
+      flex: 1 1 auto;
+      min-inline-size: 0;
+      overflow-wrap: break-word;
+      text-align: end;
+    }
+
+    @media (width <= 760px) {
+      flex-direction: column;
+      gap: var(--ms-space-1);
+
+      & > :not(.ms-label) {
+        text-align: start;
+      }
+    }
+  }
+
+  .ms-fact-link {
+    display: block;
+    margin-block-start: 6px;
+    font-size: var(--ms-text-sm);
+  }
+
+  .ms-meal-price {
+    color: var(--ms-agave);
+  }
+
+  /* Disclosure rows (opening hours, sources). */
+  .ms-fold {
+    border-block-end: var(--ms-line);
+
+    & > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--ms-space-2);
+      min-block-size: var(--ms-control);
+      padding: var(--ms-space-3) var(--ms-space-4);
+      list-style: none;
+      cursor: pointer;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      &:is(:hover, :active) {
+        background: var(--ms-ink);
+        color: var(--ms-paper);
+      }
+    }
+  }
+
+  .ms-fold-chevron {
+    flex: none;
+    inline-size: 6px;
+    block-size: 6px;
+    margin-inline-start: auto;
+    border-inline-end: var(--ms-line);
+    border-block-end: var(--ms-line);
+    border-color: currentColor;
+    rotate: 45deg;
+
+    .ms-fold[open] & {
+      rotate: 225deg;
+    }
+  }
+
+  .ms-hours {
+    display: grid;
+    gap: var(--ms-space-1);
+    padding: 0 var(--ms-space-4) var(--ms-space-3);
+    font-size: var(--ms-text-md);
+    overflow-wrap: break-word;
+  }
+
+  .ms-list {
+    list-style: none;
+
+    & > li {
+      padding: 10px var(--ms-space-4);
+      border-block-end: var(--ms-line);
+      font-size: var(--ms-text-md);
+      overflow-wrap: anywhere;
+
+      &:last-child {
+        border-block-end: 0;
+      }
+    }
+  }
+
+  .ms-table {
+    inline-size: 100%;
+    font-size: var(--ms-text-md);
+
+    & :is(th, td) {
+      padding: 7px var(--ms-space-2) 7px 0;
+      border-block-end: var(--ms-line);
+      text-align: start;
+      vertical-align: top;
+    }
+
+    & th {
+      padding-block: 6px;
+      font-size: var(--ms-text-2xs);
+      font-weight: 600;
+      letter-spacing: var(--ms-track-small-caps);
+      text-transform: uppercase;
+    }
+
+    @media (width <= 760px) {
+      & :is(th, td):nth-child(4) {
+        display: none;
+      }
+    }
+  }
+
+  /* ---------- Buttons ---------- */
+
+  /* Solid ink block; inverts on hover. Book and Instagram swap the ink for their colour. */
+  .ms-button {
+    --ms-button-fill: var(--ms-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    margin-block-start: var(--ms-space-3);
+    padding: var(--ms-space-3) 18px;
+    border: var(--ms-rule) solid var(--ms-button-fill);
+    background: var(--ms-button-fill);
+    color: var(--ms-paper);
+    font-size: var(--ms-text-md);
+    font-weight: 700;
+    letter-spacing: var(--ms-track-wide);
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+
+    &:hover {
+      background: var(--ms-paper);
+      color: var(--ms-button-fill);
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+  }
+
+  .ms-button-book {
+    --ms-button-fill: var(--ms-agave);
+  }
+
+  .ms-button-ig {
+    --ms-button-fill: var(--ms-instagram);
+  }
+
+  /* One to three equal buttons in a row (menu, booking, Instagram). */
+  .ms-actions {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 6px;
+    min-inline-size: 0;
+    padding: var(--ms-space-3) var(--ms-space-4);
+
+    & .ms-button {
+      min-inline-size: 0;
+      margin-block-start: 0;
+      padding-inline: var(--ms-space-2);
+      overflow-wrap: break-word;
+
+      @media (width <= 760px) {
+        padding-inline: var(--ms-space-1);
+        font-size: var(--ms-text-xs);
+        letter-spacing: var(--ms-track-small-caps);
+      }
+    }
+  }
+
+  /* ---------- Fields ---------- */
+
+  .ms-input {
+    inline-size: 100%;
+    padding: 14px;
+    border: var(--ms-line);
+    background: var(--ms-field);
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-input);
+  }
+
+  .ms-field-row {
+    display: grid;
+    gap: var(--ms-space-2);
+    padding: var(--ms-space-3) var(--ms-space-4);
+    border-block-end: var(--ms-line);
+  }
+
+  .ms-search {
+    margin-block-end: var(--ms-space-4);
+    border: var(--ms-line);
+  }
+
+  /* ---------- Restaurant and dish tiles ---------- */
+
+  .ms-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 6px;
+    list-style: none;
+
+    @media (width <= 760px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .ms-tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ms-space-1);
+    block-size: 100%;
+    padding: var(--ms-space-3) 14px;
+    border: var(--ms-line);
+    background: var(--ms-agave-wash);
+    text-decoration: none;
+
+    &:is(:hover, :focus-visible) {
+      --ms-tile-price: var(--ms-paper);
+      background: var(--ms-ink);
+      color: var(--ms-paper);
+    }
+  }
+
+  .ms-tile-name {
+    font-size: var(--ms-text-lg);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: var(--ms-track-tight);
+    text-transform: uppercase;
+
+    @media (width <= 760px) {
+      font-size: var(--ms-text-md);
+    }
+  }
+
+  .ms-tile-meta {
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-xs);
+  }
+
+  .ms-tile-note {
+    font-size: var(--ms-text-sm);
+    line-height: 1.35;
+  }
+
+  .ms-tile-price {
+    margin-block-start: auto;
+    color: var(--ms-tile-price, var(--ms-agave));
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-sm);
+    font-weight: 700;
+  }
+
+  /* Restaurant card title (lists that show full cards). */
+  .ms-card-name {
+    min-block-size: 2.4em;
+    font-size: var(--ms-text-lg);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: var(--ms-track-snug);
+    text-transform: uppercase;
+    overflow-wrap: break-word;
+  }
+
+  .ms-card-link {
+    display: block;
+    inline-size: 100%;
+    text-decoration: none;
+
+    &:is(:hover, :active) .ms-card-name {
+      background: var(--ms-ink);
+      color: var(--ms-paper);
+    }
+  }
+
+  /* ---------- Home finder: budget / dish / name ---------- */
+
+  .ms-finder {
+    --ms-box-fill: var(--ms-agave-wash);
+    max-inline-size: var(--ms-finder-max);
+    margin: 0 auto var(--ms-space-6);
+  }
+
+  .ms-finder-tabs {
+    display: flex;
+    border-block-end: var(--ms-line);
+
+    & > button {
+      flex: 1;
+      padding-block: 13px;
+      border-inline-end: var(--ms-line);
+      background: var(--ms-field);
+      font-size: var(--ms-text-xs);
+      font-weight: 600;
+      letter-spacing: var(--ms-track-wide);
+      text-transform: uppercase;
+
+      &:last-child {
+        border-inline-end: 0;
+      }
+
+      &:is(:hover, [aria-pressed="true"]) {
+        background: var(--ms-ink);
+        color: var(--ms-paper);
+      }
+    }
+  }
+
+  .ms-finder-body {
+    padding: var(--ms-space-4);
+  }
+
+  /* A numbered step ("01 · Budget per person") inside the finder. */
+  .ms-step {
+    display: block;
+    position: relative;
+    padding: 13px 15px;
+    border: var(--ms-line);
+    background: var(--ms-field);
+
+    &:focus-within {
+      outline: 2px solid var(--ms-ink);
+      outline-offset: -1px;
+    }
+
+    & :is(input, select):focus-visible {
+      outline: 0;
+    }
+
+    /* Typing a name: a large bare line, no box of its own. */
+    & input {
+      inline-size: 100%;
+      min-inline-size: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      font-family: var(--ms-font-mono);
+      font-size: var(--ms-text-display);
+      font-weight: 700;
+    }
+
+    & select {
+      appearance: none;
+      padding-inline-end: 36px;
+      background: var(--ms-field) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0h10L5 6z'/%3E%3C/svg%3E") no-repeat right 14px center / 10px 6px;
+      font-size: var(--ms-text-base);
+      cursor: pointer;
+    }
+  }
+
+  .ms-step-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ms-space-3);
+    margin-block-end: var(--ms-space-2);
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-2xs);
+    letter-spacing: var(--ms-track-label);
+    text-transform: uppercase;
+  }
+
+  /* The arrow that links step 01 to step 02, overlapping both frames. */
+  .ms-step-link {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    margin-block: -11px;
+  }
+
+  .ms-step-arrow {
+    display: grid;
+    place-items: center;
+    inline-size: 36px;
+    block-size: 36px;
+    border: var(--ms-line);
+    background: var(--ms-field);
+    box-shadow: 0 0 0 4px var(--ms-field);
+    font-size: var(--ms-text-md);
+  }
+
+  .ms-budget-choices {
+    display: flex;
+    border: var(--ms-line);
+
+    & > button {
+      flex: 1;
+      padding-block: 10px;
+      border-inline-end: var(--ms-line);
+      background: var(--ms-field);
+      font-family: var(--ms-font-mono);
+      font-size: var(--ms-text-xs);
+      font-weight: 600;
+
+      &:last-child {
+        border-inline-end: 0;
+      }
+
+      &:is(:hover, [aria-pressed="true"]) {
+        background: var(--ms-ink);
+        color: var(--ms-paper);
+      }
+    }
+  }
+
+  .ms-currency {
+    display: inline-flex;
+    border: var(--ms-line);
+
+    & > button {
+      padding: 3px 9px;
+      background: var(--ms-field);
+      font-family: var(--ms-font-mono);
+      font-size: var(--ms-text-2xs);
+      letter-spacing: var(--ms-track-label);
+
+      & + button {
+        border-inline-start: var(--ms-line);
+      }
+
+      &[aria-pressed="true"] {
+        background: var(--ms-ink);
+        color: var(--ms-paper);
+      }
+    }
+  }
+
+  .ms-finder-static {
+    margin-block-end: var(--ms-space-2);
+    padding: 14px;
+    border: var(--ms-line);
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-base);
+  }
+
+  .ms-finder-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 2px var(--ms-space-1);
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-2xs);
+    letter-spacing: var(--ms-track-snug);
+  }
+
+  .ms-finder-results {
+    margin-block-start: var(--ms-space-3);
+    border: var(--ms-line);
+  }
+
+  /* ---------- Page: home ---------- */
+
+  .ms-home {
+    text-align: center;
+
+    & .ms-title {
+      max-inline-size: 760px;
+      margin: var(--ms-space-7) auto var(--ms-space-3);
+
+      @media (width <= 760px) {
+        margin-block-start: var(--ms-space-4);
+      }
+    }
+
+    & .ms-finder {
+      text-align: start;
+    }
+  }
+
+  .ms-promise {
+    margin: 0 auto var(--ms-space-6);
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-xs);
+    letter-spacing: var(--ms-track-label);
+    text-transform: uppercase;
+  }
+
+  .ms-say-invite {
+    margin: var(--ms-space-5) auto var(--ms-space-4);
+    font-size: var(--ms-text-md);
+  }
+
+  .ms-more {
+    margin-inline: auto;
+    font-size: var(--ms-text-sm);
+  }
+
+  /* ---------- Page: restaurant menu ---------- */
+
+  .ms-menu {
+    padding: 20px var(--ms-space-5);
+    border-block: var(--ms-line);
+    scroll-margin-block-start: 90px;
+
+    @media (width <= 760px) {
+      padding: 18px var(--ms-space-4);
+    }
+  }
+
+  .ms-menu-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ms-space-3);
+
+    & h2 {
+      font-size: var(--ms-text-xl);
+    }
+  }
+
+  .ms-menu-note {
+    max-inline-size: 65ch;
+    margin-block: var(--ms-space-3);
+    font-size: var(--ms-text-md);
+    line-height: 1.5;
+  }
+
+  .ms-menu-date {
+    margin-block: var(--ms-space-3);
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-2xs);
+    line-height: 1.7;
+  }
+
+  :is(.ms-menu-date a, .ms-menu-proof) {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .ms-menu-list {
+    list-style: none;
+  }
+
+  .ms-menu-formulas {
+    margin-block: 20px;
+    font-weight: 700;
+  }
+
+  .ms-menu-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 18px;
+    padding-block: var(--ms-space-3);
+    border-block-start: var(--ms-hairline);
+    font-size: var(--ms-text-base);
+    line-height: 1.45;
+
+    & > span:first-child {
+      min-inline-size: 0;
+      overflow-wrap: anywhere;
+    }
+
+    @media (width <= 760px) {
+      gap: var(--ms-space-3);
+    }
+  }
+
+  .ms-menu-price {
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-xs);
+    white-space: nowrap;
+  }
+
+  :is(.ms-menu-detail, .ms-menu-proof) {
+    display: block;
+    margin-block-start: 5px;
+    font-size: var(--ms-text-xs);
+  }
+
+  .ms-menu-more > summary {
+    min-block-size: 44px;
+    padding-block: 14px;
+    font-family: var(--ms-font-mono);
+    font-size: var(--ms-text-xs);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid;
+      outline-offset: 3px;
+    }
+  }
+
+  /* ---------- Page: Say ---------- */
+
+  .ms-page.ms-say-page {
+    max-inline-size: 760px;
+  }
+}

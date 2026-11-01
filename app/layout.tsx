@@ -22,7 +22,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   colorScheme: "only light",
-  themeColor: "#ffffff",
+  themeColor: "#fbf9f4",
 };
 
 async function headerStats() {
@@ -34,7 +34,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang={SITE_LOCALE}>
       <body>
-        <div className="ds-app">
+        <div className="ms-shell">
           <JsonLd data={siteGraphJsonLd()} />
           <SiteHeader stats={await headerStats()} />
           <span id="content" tabIndex={-1} />
