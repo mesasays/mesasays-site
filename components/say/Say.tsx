@@ -26,6 +26,7 @@ const COPY = {
     seeAll: (n: number) => `See all ${n}`,
     nobody: "Nobody has said anything yet. Been here? Say what to order, and what to skip.",
     askAbout: (name: string) => `Ask or say something about ${name}…`,
+    license: "What you write is public and shared under CC BY-SA 4.0: anyone may reuse it, crediting your name.",
   },
   es: {
     peopleSay: "La gente dice",
@@ -38,6 +39,7 @@ const COPY = {
     seeAll: (n: number) => `Ver las ${n}`,
     nobody: "Nadie ha dicho nada todavía. ¿Ya fuiste? Di qué pedir y qué evitar.",
     askAbout: (name: string) => `Pregunta o di algo sobre ${name}…`,
+    license: "Lo que escribes es público y se comparte bajo CC BY-SA 4.0: cualquiera puede reutilizarlo citando tu nombre.",
   },
 };
 
@@ -68,6 +70,14 @@ function ThreadCard({ thread, places, here, lang = "en" }: { thread: SayThreadDa
         ))}
       </p>
     </article>
+  );
+}
+
+function LicenseNote({ lang = "en" }: { lang?: Lang }) {
+  return (
+    <p className="say-meta">
+      <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">{COPY[lang].license}</a>
+    </p>
   );
 }
 
@@ -140,6 +150,7 @@ function Composer({ slug, placeholder, lang = "en" }: { slug?: string; placehold
       <textarea value={form.text} onChange={(event) => form.setText(event.target.value)} placeholder={placeholder} rows={4} maxLength={4000} autoFocus />
       <NameField draft={form.draft} setDraft={form.setDraft} lang={lang} />
       <Honeypot value={form.website} onChange={form.setWebsite} />
+      <LicenseNote lang={lang} />
       {form.error ? <p className="say-error" role="alert">{form.error}</p> : null}
       <div className="say-row">
         <button type="button" className="say-textbtn" onClick={() => setOpen(false)}>{COPY[lang].cancel}</button>
@@ -238,6 +249,7 @@ function ReplyBox({ threadId, parentId, onDone, autoFocus }: { threadId: string;
       <textarea value={form.text} onChange={(event) => form.setText(event.target.value)} placeholder={parentId ? "Reply…" : "Been there? Say what to order, and what to skip."} rows={2} maxLength={4000} autoFocus={autoFocus} />
       <NameField draft={form.draft} setDraft={form.setDraft} />
       <Honeypot value={form.website} onChange={form.setWebsite} />
+      <LicenseNote />
       {form.error ? <p className="say-error" role="alert">{form.error}</p> : null}
       <div className="say-row">
         {onDone ? <button type="button" className="say-textbtn" onClick={onDone}>Cancel</button> : <span />}

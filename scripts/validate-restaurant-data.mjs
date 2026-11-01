@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -11,6 +11,55 @@ const fail = (message) => {
   throw new Error(message);
 };
 const readJson = (path) => JSON.parse(readFileSync(path, "utf8"));
+
+// Open build (scripts/open-data-to-v1.mjs, public repo): the private hard counts do not apply.
+if (existsSync(resolve(v1Root, "OPEN_DATA_BUILD.json"))) {
+  validateOpenBuild();
+  process.exit(0);
+}
+
+function validateOpenBuild() {
+  const isDate = (date) => /^\d{4}-\d{2}-\d{2}$/.test(date ?? "") && !Number.isNaN(Date.parse(date));
+  const isWeb = (url) => {
+    if (url == null || url === "") return true;
+    try { return ["http:", "https:"].includes(new URL(url).protocol); } catch { return false; }
+  };
+  const googleMaps = /google\.[a-z.]+\/maps|maps\.google\.|goo\.gl/i;
+  const registry = readJson(resolve(v1Root, "registry.json"));
+  if (!Array.isArray(registry) || !registry.length) fail("Open build: registry is empty");
+  const slugs = registry.map((row) => row.slug);
+  if (new Set(slugs).size !== slugs.length) fail("Open build: registry has duplicate slugs");
+  if (!Array.isArray(readJson(resolve(siteRoot, "collections.json")))) fail("Open build: collections.json must be an array");
+  let menus = 0;
+  let dishes = 0;
+  for (const slug of slugs) {
+    if (!/^[a-z0-9-]+$/.test(slug ?? "")) fail(`Open build: invalid slug ${slug}`);
+    const enrichedPath = resolve(v1Root, "enriched", `${slug}.json`);
+    if (!existsSync(enrichedPath)) fail(`Open build: missing enriched/${slug}.json`);
+    const record = readJson(enrichedPath);
+    if (record.slug !== slug || !record.name) fail(`Open build: ${slug} has no slug/name`);
+    if (record.seo?.indexable === true) fail(`Open build: ${slug} is indexable`);
+    const urls = [record.contact?.website, record.reservation?.url, ...(record.sources ?? []).map((source) => source.url)];
+    for (const url of urls) {
+      if (!isWeb(url)) fail(`Open build: ${slug} has a non-web URL`);
+      if (url && googleMaps.test(url)) fail(`Open build: ${slug} has a Google Maps link`);
+    }
+    const menuPath = resolve(v1Root, "menus", `${slug}.json`);
+    if (!existsSync(menuPath)) continue;
+    const menu = readJson(menuPath);
+    const publication = menu.publication;
+    menus += 1;
+    if (!publication || !isWeb(menu.url) || !menu.url) fail(`Open build: ${slug} menu lacks a source`);
+    if (!isDate(publication.checkedAt) || !isDate(publication.recheckAfter)) fail(`Open build: ${slug} menu dates invalid`);
+    if (!Array.isArray(menu.items) || !menu.items.length) fail(`Open build: ${slug} menu has no items`);
+    for (const item of menu.items) {
+      if (!item.name || !isWeb(item.sourceUrl) || !isDate(item.observedAt)) fail(`Open build: ${slug} dish lacks provenance`);
+      if (item.price !== null && (!Number.isFinite(item.price) || item.price <= 0 || item.currency !== "MXN")) fail(`Open build: ${slug} invalid dish price`);
+    }
+    dishes += menu.items.length;
+  }
+  console.log(JSON.stringify({ valid: true, mode: "open", restaurants: slugs.length, menus, dishes }, null, 2));
+}
 
 const registry = readJson(resolve(v1Root, "registry.json"));
 const allowlist = readJson(resolve(v1Root, "allowlist.json"));

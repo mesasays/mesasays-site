@@ -5,12 +5,14 @@
   "scripts": {
     "dev": "next dev",
     "data:check": "node scripts/validate-restaurant-data.mjs",
-    "prebuild": "npm run data:check",
+    "data:open": "node scripts/open-data-to-v1.mjs",
+    "prebuild": "node scripts/open-data-to-v1.mjs --if-missing && npm run data:check",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "menus:check": "node scripts/check-menu-sources.mjs",
-    "menus:test": "node --test scripts/check-menu-sources.test.mjs && node scripts/test-menu-publication.mjs"
+    "menus:test": "node --test scripts/check-menu-sources.test.mjs && node scripts/test-menu-publication.mjs",
+    "predev": "node scripts/open-data-to-v1.mjs --if-missing"
   },
   "dependencies": {
     "next": "16.3.8",

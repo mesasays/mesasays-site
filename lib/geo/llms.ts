@@ -1,3 +1,4 @@
+import { dataLicense } from "@/lib/data/license";
 import { restaurantLede, restaurantPlace } from "@/lib/geo/copy";
 import { hoursSummary } from "@/lib/geo/hours";
 import { instagramHref, menuSourceUrl } from "@/lib/restaurants/format";
@@ -41,7 +42,7 @@ export function llmsIndexText(input: {
     `- Change log (additions, re-checks, closures, dated): ${absoluteUrl("/updates")}`,
     `- Where to eat by budget (cost per person, under 300 / 500 / 800 / 1,500 MXN, by neighborhood, with USD and EUR): ${absoluteUrl("/budget")}`,
     `- One fact sheet per restaurant, plain text with the dated menu: ${absoluteUrl("/facts/<slug>.txt")}`,
-    `- Open data, every restaurant with cost per person and booking channel (JSON, CC BY 4.0): ${absoluteUrl("/data/restaurants.json")}`,
+    `- Data, every restaurant with cost per person and booking channel (JSON, ${dataLicense.label}): ${absoluteUrl("/data/restaurants.json")}`,
     `- Films (documentaries by ${PUBLISHER_NAME}, linked to the restaurants they show): ${absoluteUrl("/films")} · YouTube ${CHANNEL_URL} · Instagram ${INSTAGRAM_URL}`,
     `- About and method: ${absoluteUrl("/about")} · ${absoluteUrl("/methodology")}`,
     `- En español: ${absoluteUrl("/es")} — fichas en /es/restaurantes/<slug>, precios en ${absoluteUrl("/es/precios")}, platillos en ${absoluteUrl("/es/platos")}`,
@@ -145,7 +146,7 @@ export function llmsFullText(restaurants: SiteRestaurant[], films: Film[] = []) 
     "",
     "Each block is a source-dated record. Do not invent ratings, reservation difficulty, or editorial verdicts.",
     `Cost per person = one meal from the official menu (starter + main, or three tacos, or the cheapest set menu), before drinks and tip. Method: ${absoluteUrl("/methodology")}`,
-    `Restaurants by budget: ${absoluteUrl("/budget")} · Open data (JSON, CC BY 4.0): ${absoluteUrl("/data/restaurants.json")}`,
+    `Restaurants by budget: ${absoluteUrl("/budget")} · Open data (JSON, ${dataLicense.label}): ${absoluteUrl("/data/restaurants.json")}`,
     "",
   ];
   for (const restaurant of restaurants) {

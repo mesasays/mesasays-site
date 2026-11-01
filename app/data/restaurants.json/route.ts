@@ -4,9 +4,10 @@ import { hoursSummary } from "@/lib/geo/hours";
 import { instagramHref } from "@/lib/restaurants/format";
 import { priceArea } from "@/lib/restaurants/price-index";
 import { restaurantBooking, restaurantMealCost } from "@/lib/restaurants/quick-facts";
+import { dataLicense } from "@/lib/data/license";
 import { CHANNEL_URL, PUBLISHER_NAME, SITE_NAME, absoluteUrl } from "@/lib/site";
 
-// Open data export of the catalog (CC BY 4.0): the facts behind every page, one row per restaurant.
+// Data export of the catalog: the facts behind every page, one row per restaurant. License: see lib/data/license.ts.
 export const dynamic = "force-static";
 
 export async function GET() {
@@ -43,7 +44,9 @@ export async function GET() {
   const body = {
     name: `${SITE_NAME} — Mexico City restaurants`,
     publisher: { name: PUBLISHER_NAME, url: CHANNEL_URL, site: absoluteUrl("/") },
-    license: "https://creativecommons.org/licenses/by/4.0/",
+    license: dataLicense.license,
+    licenseNote: dataLicense.label,
+    openDataset: dataLicense.reuse,
     attribution: `${SITE_NAME} (${absoluteUrl("/")})`,
     methodology: absoluteUrl("/methodology"),
     currency: { base: "MXN", fxDate: FX_DATE, note: "USD and EUR equivalents are rounded, from the European Central Bank reference rate." },
