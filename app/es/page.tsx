@@ -31,10 +31,12 @@ export default async function InicioPage() {
 
   return (
     <main className="ms-page ms-home" lang="es-MX">
-      <h1 className="ms-title">La guía abierta de restaurantes de la Ciudad de México.</h1>
-      <p className="ms-promise">Ningún restaurante paga por estar aquí.</p>
+      <h1 className="ms-title">La guía de restaurantes descentralizada</h1>
+      <p className="ms-promise">Ciudad de México</p>
 
       <HomeFinder {...(await finderProps("es"))} locale="es" />
+
+      <p className="ms-say-invite">Ningún restaurante paga por estar aquí.</p>
 
       <p className="ms-more ms-num">
         <Link href={paths.restaurants("es") as never} className="ms-link">{all.length} restaurantes <span aria-hidden="true">→</span></Link>

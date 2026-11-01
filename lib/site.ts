@@ -1,8 +1,8 @@
 export const SITE_NAME = "Mesasays";
 export const SITE_TAGLINE =
-  "The open restaurant guide to Mexico City.";
-export const SITE_HOME_TITLE = "Mesasays — The open restaurant guide to Mexico City";
-export const SITE_HOME_TITLE_ES = "Mesasays — La guía abierta de restaurantes de la Ciudad de México";
+  "The decentralized restaurant guide to Mexico City.";
+export const SITE_HOME_TITLE = "Mesasays — The decentralized restaurant guide to Mexico City";
+export const SITE_HOME_TITLE_ES = "Mesasays — La guía de restaurantes descentralizada de la Ciudad de México";
 /** Home page description for search results; the restaurant count comes from the catalog at build time. */
 export function homeDescription(count: number, locale: "en" | "es" = "en") {
   return locale === "es"
