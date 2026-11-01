@@ -35,12 +35,6 @@ export function formatPrice(
   }).format(amount);
 }
 
-export function formatPriceLevel(level: number | null | undefined) {
-  if (level === null || level === undefined) return null;
-  if (level < 1 || level > 4) return String(level);
-  return "$".repeat(level);
-}
-
 export function formatCuisine(value: string | null | undefined) {
   if (!value) return null;
   return value.replaceAll("_", " ");

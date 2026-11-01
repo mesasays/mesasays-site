@@ -35,8 +35,34 @@ export function RestaurantQuickFacts({
   const channel = (label: string) => (locale === "es" ? ES_CHANNELS[label] ?? label : label);
   const date = (value: string | null | undefined) => (locale === "en" ? formatObserved(value) : formatDate(value, locale));
   const bookUrl = facts.booking?.url && !facts.booking.walkIn ? facts.booking.url : null;
-  // Phone-only booking gets a call button (tel: link) in the same place as "Book".
-  const callPhone = !bookUrl && !facts.booking?.walkIn ? facts.booking?.phone ?? restaurant.contact.phone ?? null : null;
+  // Two ways to book, side by side: the restaurant's direct line (free for it) and, when there is one,
+  // the online channel it chose. We only state a fee where it is a known model (OpenTable bills per diner).
+  const callPhone = !facts.booking?.walkIn ? facts.booking?.phone ?? restaurant.contact.phone ?? null : null;
+  const viaWhatsApp = facts.booking?.label === "WhatsApp";
+  const directHref = callPhone
+    ? viaWhatsApp
+      ? `https://wa.me/${callPhone.replace(/\D/g, "").replace(/^(?!52)/, "52")}`
+      : `tel:${callPhone.replace(/[^+\d]/g, "")}`
+    : null;
+  // A WhatsApp or phone "link" is the direct line itself, not a second way to book.
+  const onlineUrl = bookUrl && !/^(tel:|https:\/\/(wa\.me|api\.whatsapp\.com)\/)/.test(bookUrl) && facts.booking!.label !== "WhatsApp" ? bookUrl : null;
+  const platform = onlineUrl ? facts.booking!.label : null;
+  const isDm = platform === "Instagram DM";
+  const isOwnSite = platform === "Official site" || platform === "Reservation";
+  const es = locale === "es";
+  const book = {
+    direct: viaWhatsApp ? "WhatsApp" : es ? "Llamar" : "Call",
+    free: es ? "Gratis para el restaurante" : "Free for the restaurant",
+    online: isOwnSite ? (es ? "Reservar en su sitio" : "Book on their site") : isDm ? (es ? "Mensaje en Instagram" : "Message on Instagram") : es ? `Reservar en ${platform}` : `Book on ${platform}`,
+    onlineNote:
+      platform === "OpenTable"
+        ? es ? "El restaurante le paga a OpenTable por cada comensal reservado" : "The restaurant pays OpenTable for each diner booked"
+        : isOwnSite
+          ? es ? "En el sitio del propio restaurante" : "On the restaurant's own site"
+          : isDm
+            ? es ? "Gratis para el restaurante" : "Free for the restaurant"
+          : es ? "Servicio de reservas elegido por el restaurante" : "Booking service chosen by the restaurant",
+  };
   const instagram = instagramHref(restaurant.contact.instagram);
   const igUrl = instagram && !(bookUrl && /instagram\.com/.test(bookUrl)) ? instagram : null;
   const hasAny = facts.meal || facts.price || facts.tastingMenus.length || facts.booking || facts.menu || igUrl;
@@ -87,19 +113,30 @@ export function RestaurantQuickFacts({
         <Fact label={s.howToBook}>{facts.booking.walkIn ? s.walkIn : channel(facts.booking.label)}</Fact>
       ) : null}
 
-      {facts.menu || bookUrl || callPhone || igUrl ? (
+      {directHref || onlineUrl ? (
+        <div className="ms-book" aria-label={s.howToBook}>
+          {directHref ? (
+            <div className="ms-book-option">
+              <a href={directHref} className="ms-button ms-button-book" rel="noreferrer" target={viaWhatsApp ? "_blank" : undefined}>
+                {book.direct}
+              </a>
+              <span className="ms-book-note">{book.free}</span>
+            </div>
+          ) : null}
+          {onlineUrl ? (
+            <div className="ms-book-option">
+              <a href={onlineUrl} className={directHref ? "ms-button" : "ms-button ms-button-book"} rel="noreferrer" target="_blank">
+                {book.online}
+              </a>
+              <span className="ms-book-note">{book.onlineNote}</span>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
+      {facts.menu || igUrl ? (
         <div className="ms-actions">
           {facts.menu ? <a href="#menu" className="ms-button">{s.menu}</a> : null}
-          {bookUrl ? (
-            <a href={bookUrl} className="ms-button ms-button-book" rel="noreferrer" target="_blank">
-              Booking
-            </a>
-          ) : null}
-          {callPhone ? (
-            <a href={`tel:${callPhone.replace(/[^+\d]/g, "")}`} className="ms-button ms-button-book">
-              {locale === "es" ? "Llamar" : "Call"}
-            </a>
-          ) : null}
           {igUrl ? (
             <a href={igUrl} className="ms-button ms-button-ig" rel="noreferrer" target="_blank">Instagram</a>
           ) : null}

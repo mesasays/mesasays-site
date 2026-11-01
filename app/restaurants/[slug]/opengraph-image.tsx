@@ -2,10 +2,8 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { getRestaurantBySlug, listRestaurantSlugs } from "@/lib/data";
-import {
-  formatCuisine,
-  formatPriceLevel,
-} from "@/lib/restaurants/format";
+import { formatCuisine } from "@/lib/restaurants/format";
+import { restaurantPriceSymbol } from "@/lib/restaurants/quick-facts";
 
 export const runtime = "nodejs";
 // Prerendered for every restaurant at build time, like the page itself (no function call per share).
@@ -41,7 +39,7 @@ export default async function RestaurantOpenGraphImage({
   const name = restaurant?.name ?? slug;
   const neighborhood = restaurant?.location.neighborhood ?? "Mexico City";
   const cuisine = formatCuisine(restaurant?.food.cuisine);
-  const price = formatPriceLevel(restaurant?.food.priceLevel);
+  const price = restaurant ? restaurantPriceSymbol(restaurant) : null;
   const meta = [neighborhood, price, cuisine].filter(Boolean).join(" · ");
 
   return new ImageResponse(

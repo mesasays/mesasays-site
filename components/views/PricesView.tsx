@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { JsonLd } from "@/components/JsonLd";
+import { dataLicense } from "@/lib/data/license";
 import { formatDate, paths, type Locale } from "@/lib/i18n";
 import type { PriceIndex } from "@/lib/restaurants/price-index";
 import { MIN_PRICED_DISHES, MIN_RESTAURANTS_PER_GROUP, pesos } from "@/lib/restaurants/stats";
@@ -66,7 +67,7 @@ export function PricesView({ index, locale }: { index: PriceIndex; locale: Local
     "@type": "Dataset",
     name: locale === "es" ? `${SITE_NAME}: índice de precios de restaurantes en la Ciudad de México` : `${SITE_NAME} Mexico City restaurant menu price index`,
     description: c.lede(index.restaurantsWithPrices, index.city ? pesos(index.city.medianOfMedians) : "—", index.city ? pesos(index.city.p25) : "—", index.city ? pesos(index.city.p75) : "—", index.pricedDishes.toLocaleString("en-US")),
-    license: "https://creativecommons.org/licenses/by/4.0/",
+    license: dataLicense.license ?? undefined,
     inLanguage: locale === "es" ? "es-MX" : "en",
     url: absoluteUrl(paths.prices(locale)),
     creator: { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/") },

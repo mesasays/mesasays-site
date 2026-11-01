@@ -272,7 +272,9 @@ export function restaurantFromEnriched(record: V1EnrichedRecord): SiteRestaurant
       cuisine: record.food?.cuisine ?? null,
       michelinCuisine: null,
       openTableCuisine: null,
-      priceLevel: record.food?.priceLevel ?? null,
+      // The $–$$$$ level in these records was copied from Google Places: not published. Shown symbols come
+      // from our own cost per person instead (priceSymbol in lib/restaurants/meal-cost.ts).
+      priceLevel: null,
     },
     experience: {
       sourceSummary: null,

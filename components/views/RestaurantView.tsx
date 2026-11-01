@@ -8,8 +8,8 @@ import { SayBlock } from "@/components/say/Say";
 import { paths, t, type Locale } from "@/lib/i18n";
 import { restaurantJsonLd } from "@/lib/jsonld";
 import type { Film } from "@/lib/restaurants/films";
-import { formatPriceLevel } from "@/lib/restaurants/format";
 import { cuisineDisplay } from "@/lib/restaurants/price-index";
+import { restaurantPriceSymbol } from "@/lib/restaurants/quick-facts";
 import { sayPlace } from "@/lib/say/load";
 import type { SiteRestaurant } from "@/lib/restaurants/types";
 
@@ -36,7 +36,7 @@ export function RestaurantView({
       <section className="ms-box" style={{ marginBottom: 16 }}>
         <div className="ms-box-head">
           <span className="ms-label">{cuisineDisplay(restaurant, locale) ?? s.restaurants}</span>
-          <span className="ms-num">{formatPriceLevel(restaurant.food.priceLevel) ?? "\u00a0"}</span>
+          <span className="ms-num">{restaurantPriceSymbol(restaurant) ?? "\u00a0"}</span>
         </div>
         <div className="ms-inset ms-card-title">
           <h1 className="ms-title">{restaurant.name}</h1>

@@ -2,12 +2,12 @@ import type { ReactNode } from "react";
 import { publicUrl } from "@/lib/public-url";
 import Link from "next/link";
 import { RestaurantMenu } from "@/components/RestaurantMenu";
+import { ReportError } from "@/components/ReportError";
 import { RestaurantSources } from "@/components/RestaurantSources";
 import { formatHoursRow } from "@/lib/geo/hours";
 import {
   formatCuisine,
   formatObserved,
-  formatPriceLevel,
   instagramHandle,
   instagramHref,
   mapsHref,
@@ -15,7 +15,7 @@ import {
   reservationBookings,
 } from "@/lib/restaurants/format";
 import { cuisineDisplay } from "@/lib/restaurants/price-index";
-import { restaurantBooking, restaurantMealCost } from "@/lib/restaurants/quick-facts";
+import { restaurantBooking, restaurantMealCost, restaurantPriceSymbol } from "@/lib/restaurants/quick-facts";
 import { pesos } from "@/lib/restaurants/stats";
 import type { SiteRestaurant } from "@/lib/restaurants/types";
 import { formatDate, paths, t, type Locale } from "@/lib/i18n";
@@ -75,7 +75,7 @@ export function RestaurantCard({
   const cuisine = cuisineDisplay(restaurant, locale) ?? formatCuisine(restaurant.food.cuisine);
   const compact = variant === "card";
   const meal = compact ? restaurantMealCost(restaurant) : null;
-  const price = formatPriceLevel(restaurant.food.priceLevel);
+  const price = restaurantPriceSymbol(restaurant);
   const maps = mapsHref({
     googleMapsUrl: restaurant.contact.googleMapsUrl,
     address: restaurant.location.address,
@@ -234,6 +234,7 @@ export function RestaurantCard({
             label={s.lastObserved}
             value={observed(restaurant.verification.freshestSourceAt)}
           />
+          <ReportError name={restaurant.name} slug={restaurant.slug} locale={locale} />
         </>
       ) : (
         <Row

@@ -150,6 +150,10 @@ export const loadRestaurantBySlug = cache(async (slug: string) => {
     restaurant = restaurantFromEnriched(enriched);
   }
 
+  // food.priceLevel in the source records is Google's $ level (fieldProvenance.price_level = "google_places"):
+  // dropped here so no page, export or JSON-LD can show it. Symbols come from our own cost per person.
+  restaurant = { ...restaurant, food: { ...restaurant.food, priceLevel: null } };
+
   const overlay = await loadVerifiedOverlay(slug);
   restaurant = applyVerifiedOverlay(restaurant, overlay);
   restaurant = applySocial(restaurant, (await loadSocial())[slug], overlay?.suppress ?? []);

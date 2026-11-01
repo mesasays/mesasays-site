@@ -8,7 +8,7 @@ import {
 } from "@/lib/restaurants/format";
 import { menuCoverageLabel, menuNeedsRecheck } from "@/lib/restaurants/menu-publication";
 import { foreignEquivalent } from "@/lib/currency";
-import { estimateMealCost, type MealCost } from "@/lib/restaurants/meal-cost";
+import { estimateMealCost, priceSymbol, type MealCost } from "@/lib/restaurants/meal-cost";
 import {
   pesos,
   restaurantPriceStats,
@@ -90,6 +90,11 @@ export function restaurantMealCost(restaurant: SiteRestaurant, now = new Date())
     verifiedFoodItems(restaurant, now),
     tastingMenuPrices(restaurant, now).map(({ name, price }) => ({ name, price })),
   );
+}
+
+/** $–$$$$ from our own cost per person (see PRICE_SYMBOL_BANDS); null without an estimate. */
+export function restaurantPriceSymbol(restaurant: SiteRestaurant, now = new Date()) {
+  return priceSymbol(restaurantMealCost(restaurant, now));
 }
 
 const METHOD_LABEL = {

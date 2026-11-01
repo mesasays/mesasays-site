@@ -121,3 +121,16 @@ export function estimateMealCost(
 /** Budget bands used by the /budget pages (per person, MXN). */
 export const BUDGETS = [300, 500, 800, 1500] as const;
 export type Budget = (typeof BUDGETS)[number];
+
+/**
+ * $ to $$$$ from our own cost per person (never from Google or another third party):
+ * $ up to 300 MXN, $$ 301–800, $$$ 801–1,500, $$$$ over 1,500. Same thresholds as the budget pages.
+ * No estimate, no symbol.
+ */
+export const PRICE_SYMBOL_BANDS = [300, 800, 1500] as const;
+
+export function priceSymbol(meal: MealCost | null | undefined) {
+  if (!meal) return null;
+  const level = PRICE_SYMBOL_BANDS.filter((max) => meal.estimate > max).length + 1;
+  return "$".repeat(level);
+}

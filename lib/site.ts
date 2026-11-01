@@ -29,6 +29,9 @@ export const PUBLISHER_NAME = "The Dining Dispatch";
 export const CHANNEL_URL = "https://www.youtube.com/@TheDiningDispatch";
 export const INSTAGRAM_URL = "https://www.instagram.com/thediningdispatch/";
 export const INSTAGRAM_HANDLE = "@thediningdispatch";
+// Public code repository (AGPL) and contact address for corrections and removals.
+export const PUBLIC_REPO_URL = "https://github.com/mesasays/mesasays-site";
+export const CONTACT_EMAIL = "retroprank@proton.me";
 export const SITE_ORG_ID = "#organization";
 export const SITE_WEBSITE_ID = "#website";
 export const SITE_CATALOG_ID = "#catalog";

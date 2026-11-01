@@ -135,12 +135,10 @@ export function restaurantJsonLd(restaurant: SiteRestaurant, locale: Locale = "e
     inLanguage: locale,
     telephone: restaurant.contact.phone,
     servesCuisine: cuisine.length === 1 ? cuisine[0] : cuisine,
-    // Per-person estimate from the official menu when there is one; Google's $ level otherwise.
+    // Per-person estimate from the official menu only; no estimate, no price range.
     priceRange: meal
       ? `${meal.low === meal.high ? meal.estimate : `${meal.low}–${meal.high}`} MXN per person`
-      : restaurant.food.priceLevel && restaurant.food.priceLevel >= 1
-        ? "$".repeat(Math.min(restaurant.food.priceLevel, 4))
-        : undefined,
+      : undefined,
     currenciesAccepted: "MXN",
     hasMenu: restaurant.menu.publication ? (menuNode ? { "@id": `${url}#menu` } : undefined) : menuUrl,
     sameAs: [restaurant.contact.website, instagram].filter(Boolean),

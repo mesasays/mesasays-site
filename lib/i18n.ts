@@ -138,6 +138,7 @@ export const paths = {
   films: (locale: Locale) => (locale === "es" ? "/es/peliculas" : "/films"),
   about: (locale: Locale) => (locale === "es" ? "/es/acerca" : "/about"),
   methodology: (locale: Locale) => (locale === "es" ? "/es/metodologia" : "/methodology"),
+  privacy: (locale: Locale) => (locale === "es" ? "/es/privacidad" : "/privacy"),
 };
 
 // English and Spanish budget slugs ("under-800-pesos" ↔ "menos-de-800-pesos").
@@ -159,6 +160,7 @@ export function alternatePath(pathname: string, target: Locale): string {
     [/^\/films$/, () => "/es/peliculas", /^\/es\/peliculas$/, () => "/films"],
     [/^\/about$/, () => "/es/acerca", /^\/es\/acerca$/, () => "/about"],
     [/^\/methodology$/, () => "/es/metodologia", /^\/es\/metodologia$/, () => "/methodology"],
+    [/^\/privacy$/, () => "/es/privacidad", /^\/es\/privacidad$/, () => "/privacy"],
     [/^\/$/, () => "/es", /^\/es$/, () => "/"],
   ];
   for (const [enPattern, toEs, esPattern, toEn] of pairs) {
