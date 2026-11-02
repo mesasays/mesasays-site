@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SayFeed } from "@/components/say/Say";
 import { listThreads } from "@/lib/say/db";
+import { sayMode } from "@/lib/say/farcaster/config";
 import { sayPlaces } from "@/lib/say/load";
 import { pageMetadata } from "@/lib/seo";
 
@@ -21,7 +22,7 @@ export default async function SayPage() {
     <main className="ms-page ms-say-page">
       <h1 className="ms-title say-page-title">What people say</h1>
       <p className="say-page-lede">Ask about a restaurant, or say what you ate: what to order, what to skip. No stars, no scores.</p>
-      <SayFeed threads={threads} places={places} />
+      <SayFeed threads={threads} places={places} mode={sayMode()} />
     </main>
   );
 }

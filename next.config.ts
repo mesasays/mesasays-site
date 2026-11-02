@@ -20,6 +20,8 @@ const baseConfig: NextConfig = {
   // Lets a phone on the same wifi load the dev server (demo previews); no effect in production.
   allowedDevOrigins: [],
   poweredByHeader: false,
+  // Say on Farcaster (server only): the protocol library is loaded by Node as is, not bundled.
+  serverExternalPackages: ["@farcaster/core"],
   async headers() {
     // Baseline browser protections; a CSP is deferred (inline scripts from Next and Analytics).
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SayThread, type SayPlace } from "@/components/say/Say";
 import { getThread } from "@/lib/say/db";
+import { sayMode } from "@/lib/say/farcaster/config";
 import { sayRestaurant } from "@/lib/say/load";
 import { pageMetadata } from "@/lib/seo";
 
@@ -27,12 +28,27 @@ export async function generateMetadata({ params }: PageProps<"/say/[id]">): Prom
 
 export default async function SayThreadPage({ params }: PageProps<"/say/[id]">) {
   const { id } = await params;
-  const thread = await getThread(id).catch(() => null);
+  // A hub that does not answer is not a missing conversation: say so instead of a 404.
+  let thread: Awaited<ReturnType<typeof getThread>> = null;
+  try {
+    thread = await getThread(id);
+  } catch {
+    return (
+      <main className="ms-page ms-say-page">
+        <h1 className="ms-title">Conversation temporarily unavailable</h1>
+        <p className="ms-lede">
+          Conversations live on Farcaster and the network didn&apos;t answer just now. Try again in a minute.
+          <br />
+          <span lang="es-MX">La red no respondió. Inténtalo en un minuto.</span>
+        </p>
+      </main>
+    );
+  }
   if (!thread) notFound();
   const places = (await Promise.all(thread.slugs.map(sayRestaurant))).filter((place): place is SayPlace => Boolean(place));
   return (
     <main className="ms-page ms-say-page">
-      <SayThread thread={thread} places={places} />
+      <SayThread thread={thread} places={places} mode={sayMode()} />
     </main>
   );
 }

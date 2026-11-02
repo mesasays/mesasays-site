@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { paths, type Locale } from "@/lib/i18n";
-import { matchesQuery } from "@/lib/search";
+import { fold, matchesQuery } from "@/lib/search";
 import { CurrencyToggle, useCurrency, usd } from "@/components/CurrencySwitch";
 
 // The home page's finder: three search modes (budget, dish, name), numbered steps,
@@ -17,7 +17,7 @@ type Place = { slug: string; name: string; area: string | null };
 const COPY = {
   en: {
     tabs: ["Budget", "Dish", "Name"],
-    budget: "Budget per person",
+    budget: "Per person",
     area: "Neighborhood",
     anywhere: "All of Mexico City",
     dish: "Dish",
@@ -28,11 +28,13 @@ const COPY = {
     dishCta: "Compare prices",
     note: "before drinks and tip",
     noMatch: "No match",
+    servedAt: (n: number) => `Served at ${n} restaurants`,
+    typeName: "Start typing a name…",
     fewPlaces: "Too few places to filter by neighborhood",
   },
   es: {
     tabs: ["Presupuesto", "Platillo", "Nombre"],
-    budget: "Presupuesto por persona",
+    budget: "Por persona",
     area: "Colonia",
     anywhere: "Toda la Ciudad de México",
     dish: "Platillo",
@@ -43,6 +45,8 @@ const COPY = {
     dishCta: "Comparar precios",
     note: "sin bebidas ni propina",
     noMatch: "Sin resultados",
+    servedAt: (n: number) => `En ${n} restaurantes`,
+    typeName: "Escribe un nombre…",
     fewPlaces: "Muy pocos lugares para filtrar por colonia",
   },
 };
@@ -73,7 +77,21 @@ export function HomeFinder({
   const dish = dishes.find((entry) => entry.slug === dishSlug) ?? null;
   const matches = useMemo(() => {
     if (query.trim().length < 2) return [];
-    return places.filter((place) => matchesQuery(query, place.name, place.area)).slice(0, 6);
+    // Best first: name starts with what was typed, then a word of the name does, then the name contains it,
+    // then only the neighbourhood matches ("gal" must find Galea before places in Pedregal).
+    const typed = fold(query);
+    const rank = (name: string) => {
+      const folded = fold(name);
+      if (folded.startsWith(typed)) return 0;
+      if (folded.split(" ").some((word) => word.startsWith(typed))) return 1;
+      return folded.includes(typed) ? 2 : 3;
+    };
+    return places
+      .filter((place) => matchesQuery(query, place.name, place.area))
+      .map((place) => ({ place, score: rank(place.name) }))
+      .sort((a, b) => a.score - b.score || a.place.name.localeCompare(b.place.name))
+      .slice(0, 6)
+      .map((entry) => entry.place);
   }, [query, places]);
 
   return (
@@ -154,7 +172,7 @@ export function HomeFinder({
             </label>
             {dish ? (
               <div className="ms-finder-summary" aria-live="polite">
-                <span>{c.places(dish.restaurants)}</span>
+                <span>{c.servedAt(dish.restaurants)}</span>
                 <span>{dish.from ? c.from(dish.from) : ""}</span>
               </div>
             ) : null}
@@ -166,7 +184,7 @@ export function HomeFinder({
           <>
             <label className="ms-step">
               <div className="ms-step-label"><span>01 · {c.name}</span></div>
-              <input className="ms-input" value={query} autoComplete="off" onChange={(event) => setQuery(event.target.value)} />
+              <input className="ms-input" value={query} autoComplete="off" placeholder={c.typeName} enterKeyHint="search" onChange={(event) => setQuery(event.target.value)} />
             </label>
             <div aria-live="polite">
             {query.trim().length >= 2 ? (

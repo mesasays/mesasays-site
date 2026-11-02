@@ -76,3 +76,13 @@
 .say-verify-body { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid var(--ms-ink); }
 .say-verify code { font-family: var(--ms-font-mono); word-break: break-all; }
 .say-json { margin: 0; padding: 10px; max-height: 320px; overflow: auto; background: var(--ms-field); border: 1px solid var(--ms-ink); font-family: var(--ms-font-mono); font-size: 11px; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
+
+/* Say on Farcaster: signing choice, links to Farcaster clients, topic hint. */
+.say-methods { display: grid; gap: 2px; margin: 0; padding: 0; border: 0; }
+.say-methods legend { padding: 0 0 4px; }
+.say-composer .say-methods input[type="radio"] { width: 18px; height: 18px; margin: 0; padding: 0; accent-color: var(--ms-ink); flex: none; }
+.say-fc { opacity: 0.7; }
+.say-fc a { text-decoration: underline; text-underline-offset: 3px; }
+.say-fc .say-textbtn { min-height: 28px; }
+.say-topic { margin-top: 10px; }
+.say-topic code { word-break: break-all; }

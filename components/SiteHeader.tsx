@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { SITE_NAME } from "@/lib/site";
 import { CurrencyEffect } from "@/components/CurrencySwitch";
-import { alternatePath, formatDate, localeOfPath, paths, t, type Locale } from "@/lib/i18n";
+import { alternatePath, localeOfPath, paths, t, type Locale } from "@/lib/i18n";
 
 function navFor(locale: Locale) {
   const s = t(locale);
@@ -19,15 +19,15 @@ function navFor(locale: Locale) {
   ];
 }
 
-export type HeaderStats = { restaurants: number; menus: number; updated: string | null };
-
-export function SiteHeader({ stats = null }: { stats?: HeaderStats | null }) {
+export function SiteHeader() {
   const pathname = usePathname();
   const locale = localeOfPath(pathname);
   const nav = navFor(locale);
   // Phones: logo and a MENU toggle on one line; the nav grid opens on demand.
   const [open, setOpen] = useState(false);
   const es = locale === "es";
+  // On the home page, phones show the whole menu as a row of boxes under the header instead of a MENU button.
+  const home = pathname === paths.home(locale);
   // Escape closes the phone menu, like any disclosure.
   useEffect(() => {
     if (!open) return;
@@ -39,15 +39,11 @@ export function SiteHeader({ stats = null }: { stats?: HeaderStats | null }) {
   }, [open]);
 
   return (
-    <header className="ms-masthead" aria-label={es ? "Navegación del sitio" : "Site navigation"}>
+    <header className={home ? "ms-masthead is-home" : "ms-masthead"} aria-label={es ? "Navegación del sitio" : "Site navigation"}>
       <a href="#content" className="ms-skip">{es ? "Saltar al contenido" : "Skip to content"}</a>
       <div className="ms-masthead-row">
         <div className="ms-brand">
           <Link prefetch={false} href={paths.home(locale)} className="ms-wordmark">{SITE_NAME.toUpperCase()}</Link>
-          {/* The publisher link replaces the footer: About leads to the films, YouTube, Instagram and method. */}
-          <Link prefetch={false} href={paths.about(locale) as never} className="ms-byline">
-            {locale === "es" ? "POR" : "BY"} THE DINING DISPATCH
-          </Link>
         </div>
         {/* Language: a quiet switch beside the wordmark; hreflang in <head> does the search work. */}
         <p className="ms-lang ms-num">
@@ -93,22 +89,6 @@ export function SiteHeader({ stats = null }: { stats?: HeaderStats | null }) {
               );
             })}
           </nav>
-          <div className="ms-counts">
-            {/* Catalog figures: how many places and menus, and when they were last checked. */}
-            {stats
-              ? [
-                  [locale === "es" ? "RESTAURANTES" : "RESTAURANTS", stats.restaurants.toLocaleString("en-US")],
-                  [locale === "es" ? "CARTAS" : "MENUS", stats.menus.toLocaleString("en-US")],
-                  [locale === "es" ? "ACTUALIZADO" : "UPDATED", formatDate(stats.updated, locale) ?? "—"],
-                ].map(([label, value]) => (
-                  <div className="ms-count" key={label}>
-                    <span>{label}</span>
-                    <strong>{value}</strong>
-                  </div>
-                ))
-              : null}
-
-          </div>
         </div>
       </div>
       <CurrencyEffect />

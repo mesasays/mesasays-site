@@ -11,8 +11,7 @@ import type {
   SiteRestaurant,
 } from "@/lib/restaurants/types";
 import {
-  CHANNEL_URL,
-  INSTAGRAM_URL,
+  PUBLIC_REPO_URL,
   SITE_CATALOG_ID,
   SITE_CITY,
   SITE_CITY_ES,
@@ -78,9 +77,9 @@ export function siteGraphJsonLd() {
         },
         image: absoluteUrl("/opengraph-image"),
         areaServed: cityPlace(),
-        // Mesasays is published by The Dining Dispatch, which films the restaurants it documents.
-        sameAs: [CHANNEL_URL, INSTAGRAM_URL],
-        parentOrganization: { "@type": "Organization", name: "The Dining Dispatch", sameAs: [CHANNEL_URL, INSTAGRAM_URL] },
+        // Mesasays is an open project, not a brand's property: its own profile is the public code.
+        // The Dining Dispatch stays credited on each film (RestaurantFilm), as a contributor.
+        sameAs: ["https://github.com/mesasays", PUBLIC_REPO_URL],
         knowsAbout: [
           "Mexico City restaurants",
           "CDMX dining",

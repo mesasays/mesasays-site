@@ -1,7 +1,7 @@
 // Say in the static (IPFS / mesasays.eth) build. Conversations need a server, so the static copy
 // of the guide points to the live ones instead. next.config.ts swaps this file in for
 // "@/components/say/Say" when MESASAYS_TARGET=ipfs; the normal builds never load it.
-import type { SayThreadData } from "@/lib/say/db";
+import type { SayMode, SayThreadData } from "@/lib/say/types";
 import "./say.css";
 
 export type SayPlace = { slug: string; name: string; neighborhood: string | null };
@@ -35,12 +35,12 @@ export function SayBlock({ lang = "en" }: { place: SayPlace; lang?: Lang }) {
 }
 
 // Same props as the live components, so the swap is invisible to their callers.
-export function SayFeed(props: { threads: SayThreadData[]; places: SayPlace[] }) {
+export function SayFeed(props: { threads: SayThreadData[]; places: SayPlace[]; mode?: SayMode }) {
   void props;
   return <SayNotice />;
 }
 
-export function SayThread(props: { thread: SayThreadData; places: SayPlace[] }) {
+export function SayThread(props: { thread: SayThreadData; places: SayPlace[]; mode?: SayMode }) {
   void props;
   return <SayNotice />;
 }

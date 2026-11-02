@@ -1,4 +1,5 @@
-import { getAddress, verifyTypedData } from "viem";
+import { getAddress, hashTypedData, verifyTypedData } from "viem";
+import { passkeyId, verifyPasskeyAssertion, type Hex, type PasskeyAssertion } from "./passkey.ts";
 
 // Signed notes: an author can sign a Say post or reply with an Ethereum wallet (EIP-712 typed data:
 // free, no transaction, no gas). The signature, not our database, is the proof. The signed payload is
@@ -57,11 +58,16 @@ export type SignedPayload = {
   message: Note;
 };
 
-/** What the browser sends next to the post when it is signed. */
-export type SignedInput = { signer: string; signature: string; createdAt: number };
+/** What the browser sends next to the post when it is signed: an Ethereum wallet signature (default) or a passkey. */
+export type SignedInput =
+  | { method?: "eip712"; signer: string; signature: string; createdAt: number }
+  | ({ method: "passkey"; createdAt: number } & PasskeyAssertion);
 
-/** A verified signature, ready to be stored. */
-export type NoteProof = { signer: `0x${string}`; signature: `0x${string}`; payload: SignedPayload };
+/** A verified wallet signature, ready to be stored. */
+export type Eip712Proof = { method: "eip712"; signer: `0x${string}`; signature: `0x${string}`; payload: SignedPayload };
+/** A verified passkey signature. `signer` is the passkey id (sha256 of its public key, 8 bytes hex). */
+export type PasskeyProof = { method: "passkey"; signer: string; signature: string; payload: SignedPayload; passkey: PasskeyAssertion & { origin: string } };
+export type NoteProof = Eip712Proof | PasskeyProof;
 
 /** Signature must be within 10 minutes of the server clock when it is posted. */
 export const MAX_SKEW_SECONDS = 600;
@@ -80,6 +86,10 @@ export function notePayload(message: Note): SignedPayload {
 }
 
 export const shortAddress = (address: string) => `${address.slice(0, 6)}…${address.slice(-4)}`;
+
+/** The EIP-712 hash of a note: what a wallet signs, and the challenge a passkey signs. */
+export const noteDigest = (note: Note): Hex =>
+  hashTypedData({ domain: NOTE_DOMAIN, types: NOTE_TYPES, primaryType: "Note", message: { ...note, createdAt: BigInt(note.createdAt) } });
 
 /* ---------- what gets posted: same normalisation in the browser and on the server ---------- */
 
@@ -112,7 +122,7 @@ export function replyNote(input: { author: string; text: string; threadId: strin
 
 /* ---------- verification ---------- */
 
-export type VerifyResult = { ok: true; proof: NoteProof } | { ok: false; reason: "malformed" | "stale" | "mismatch" };
+export type VerifyResult = { ok: true; proof: Eip712Proof } | { ok: false; reason: "malformed" | "stale" | "mismatch" };
 
 /**
  * Checks that `signature` is `signer`'s EIP-712 signature of exactly `note`.
@@ -138,14 +148,41 @@ export async function verifyNote(note: Note, signed: { signer: string; signature
       message: { ...note, createdAt: BigInt(note.createdAt) },
       signature,
     });
-    return valid ? { ok: true, proof: { signer, signature, payload: notePayload(note) } } : { ok: false, reason: "mismatch" };
+    return valid ? { ok: true, proof: { method: "eip712", signer, signature, payload: notePayload(note) } } : { ok: false, reason: "mismatch" };
   } catch {
     return { ok: false, reason: "mismatch" };
   }
 }
 
+export type SignedResult = { ok: true; proof: NoteProof } | { ok: false; reason: "malformed" | "stale" | "mismatch" | "origin" | "passkey" };
+
+/**
+ * Checks either kind of signature. Passkeys are accepted only when `origins` is given (the sites allowed to
+ * ask for one); the database backends leave it out, as they have no column for passkey proofs.
+ */
+export async function verifySigned(note: Note, signed: SignedInput, now?: number, origins?: string[]): Promise<SignedResult> {
+  if (signed.method !== "passkey") return verifyNote(note, signed, now);
+  if (!origins) return { ok: false, reason: "passkey" };
+  if (!Number.isSafeInteger(note.createdAt) || note.createdAt <= 0) return { ok: false, reason: "malformed" };
+  if (now !== undefined && Math.abs(now - note.createdAt) > MAX_SKEW_SECONDS) return { ok: false, reason: "stale" };
+  const assertion: PasskeyAssertion = {
+    publicKey: String(signed.publicKey ?? ""),
+    signature: String(signed.signature ?? ""),
+    authenticatorData: String(signed.authenticatorData ?? ""),
+    clientDataJSON: String(signed.clientDataJSON ?? ""),
+  };
+  const result = verifyPasskeyAssertion(noteDigest(note), assertion, origins);
+  if (!result.ok) return result;
+  return {
+    ok: true,
+    proof: { method: "passkey", signer: passkeyId(result.publicKey), signature: assertion.signature, payload: notePayload(note), passkey: { ...assertion, origin: result.origin } },
+  };
+}
+
 const SIGNATURE_ERRORS = {
   malformed: "That signature can't be read. Sign again, or post without signing.",
+  origin: "That passkey signature was made for another website. Nothing was posted.",
+  passkey: "Passkey signing isn't switched on here yet. Sign with a wallet, or post without signing.",
   stale: "That signature is more than 10 minutes old (or your clock is off). Sign again.",
   mismatch: "The signature doesn't match this post. Nothing was posted.",
 } as const;
@@ -154,9 +191,13 @@ const SIGNATURE_ERRORS = {
 
 export type Prepared<T> = { ok: true; post: T; proof: NoteProof | null } | { ok: false; error: string };
 
+/** `origins`: passkeys allowed (Farcaster backend). `requireSignature`: refuse unsigned posts. */
+type PrepareOptions = { now: number; origins?: string[]; requireSignature?: boolean };
+const UNSIGNED_REFUSED = "Sign your post first (passkey or wallet): that's how we keep spam out without accounts.";
+
 export async function prepareThread(
   input: { author: string; text: string; slug: string | null; signed?: SignedInput | null },
-  deps: { placeExists: (slug: string) => Promise<boolean>; now: number },
+  deps: PrepareOptions & { placeExists: (slug: string) => Promise<boolean> },
 ): Promise<Prepared<{ author: string; title: string; body: string; slug: string | null }>> {
   const author = cleanName(String(input.author ?? ""));
   const text = String(input.text ?? "").trim();
@@ -166,16 +207,16 @@ export async function prepareThread(
   const slug = input.slug && (await deps.placeExists(input.slug)) ? input.slug : null;
   const { title, body } = splitPost(text);
   const post = { author, title, body, slug };
-  if (!input.signed) return { ok: true, post, proof: null };
+  if (!input.signed) return deps.requireSignature ? { ok: false, error: UNSIGNED_REFUSED } : { ok: true, post, proof: null };
   // Rebuilt from what we are about to store: if the author signed anything else, it fails.
   const note = threadNote({ author, text, place: slug, createdAt: Number(input.signed.createdAt) });
-  const result = await verifyNote(note, input.signed, deps.now);
+  const result = await verifySigned(note, input.signed, deps.now, deps.origins);
   return result.ok ? { ok: true, post, proof: result.proof } : { ok: false, error: SIGNATURE_ERRORS[result.reason] };
 }
 
 export async function prepareReply(
   input: { threadId: string; parentId: string | null; author: string; body: string; signed?: SignedInput | null },
-  deps: { isId: (value: string) => boolean; now: number },
+  deps: PrepareOptions & { isId: (value: string) => boolean },
 ): Promise<Prepared<{ threadId: string; parentId: string | null; author: string; body: string }>> {
   const author = cleanName(String(input.author ?? ""));
   const body = String(input.body ?? "").trim();
@@ -183,18 +224,27 @@ export async function prepareReply(
   if (body.length < 2 || body.length > 4000) return { ok: false, error: "Replies are 2 to 4,000 characters." };
   if (!deps.isId(input.threadId) || (input.parentId && !deps.isId(input.parentId))) return { ok: false, error: "That conversation is gone." };
   const post = { threadId: input.threadId, parentId: input.parentId || null, author, body };
-  if (!input.signed) return { ok: true, post, proof: null };
+  if (!input.signed) return deps.requireSignature ? { ok: false, error: UNSIGNED_REFUSED } : { ok: true, post, proof: null };
   const note = replyNote({ author, text: body, threadId: post.threadId, parentId: post.parentId, createdAt: Number(input.signed.createdAt) });
-  const result = await verifyNote(note, input.signed, deps.now);
+  const result = await verifySigned(note, input.signed, deps.now, deps.origins);
   return result.ok ? { ok: true, post, proof: result.proof } : { ok: false, error: SIGNATURE_ERRORS[result.reason] };
 }
 
 /* ---------- reading: never trust the database, check every stored signature again ---------- */
 
-/** What a card shows. "invalid" means the row claims a signature that does not check out. */
+/**
+ * What a card shows. "invalid" means the post claims a signature that does not check out.
+ * `method` is absent on older data (= "eip712"). For a passkey, `signer` is the passkey id.
+ */
 export type SayProof =
-  | { status: "valid"; signer: `0x${string}`; signature: string; payload: SignedPayload }
-  | { status: "invalid"; signer: string; signature: string; payload: unknown };
+  | { status: "valid"; method?: "eip712" | "passkey"; signer: string; signature: string; payload: SignedPayload; passkey?: PasskeyAssertion & { origin: string } }
+  | { status: "invalid"; method?: "eip712" | "passkey"; signer: string; signature: string; payload: unknown };
+
+/** The proof as displayed, from a verified one. */
+export const shownProof = (proof: NoteProof): SayProof =>
+  proof.method === "passkey"
+    ? { status: "valid", method: "passkey", signer: proof.signer, signature: proof.signature, payload: proof.payload, passkey: proof.passkey }
+    : { status: "valid", method: "eip712", signer: proof.signer, signature: proof.signature, payload: proof.payload };
 
 /**
  * `shown` is the post as we display it (from the table columns). The stored message must say exactly
@@ -222,5 +272,5 @@ export async function checkStored(
   const same = (Object.keys(shown) as Array<keyof typeof shown>).every((key) => note[key] === shown[key]);
   if (!same) return invalid;
   const result = await verifyNote(note, { signer: stored.signer ?? "", signature: stored.signature ?? "" });
-  return result.ok ? { status: "valid", signer: result.proof.signer, signature: result.proof.signature, payload: result.proof.payload } : invalid;
+  return result.ok ? shownProof(result.proof) : invalid;
 }

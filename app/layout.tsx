@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { JsonLd } from "@/components/JsonLd";
 import { SiteHeader } from "@/components/SiteHeader";
-import { catalogCounts } from "@/lib/data";
 import { siteGraphJsonLd } from "@/lib/jsonld";
 import { defaultMetadata } from "@/lib/seo";
 import { SITE_LOCALE, SITE_NAME, SITE_SERP_DESCRIPTION } from "@/lib/site";
@@ -25,18 +24,13 @@ export const viewport: Viewport = {
   themeColor: "#fbf9f4",
 };
 
-async function headerStats() {
-  const counts = await catalogCounts();
-  return { restaurants: counts.restaurants, menus: counts.menus, updated: counts.latestCheck };
-}
-
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang={SITE_LOCALE}>
       <body>
         <div className="ms-shell">
           <JsonLd data={siteGraphJsonLd()} />
-          <SiteHeader stats={await headerStats()} />
+          <SiteHeader />
           <span id="content" tabIndex={-1} />
           {children}
         </div>

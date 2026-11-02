@@ -175,17 +175,6 @@
     }
   }
 
-  .ms-byline {
-    font-family: var(--ms-font-mono);
-    font-size: var(--ms-text-2xs);
-    letter-spacing: var(--ms-track-loose);
-    white-space: nowrap;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 
   .ms-lang {
     align-self: center;
@@ -253,97 +242,39 @@
     }
   }
 
-  /* Boxed tabs sharing their borders: a row on desktop, a 2-column grid on phones. */
+  /* Plain text links: the current page is underlined, nothing is boxed. A column on phones. */
   .ms-nav {
     display: flex;
-    block-size: var(--ms-control);
+    align-items: center;
+    gap: var(--ms-space-5);
 
     & a {
-      display: inline-flex;
-      align-items: center;
-      padding-inline: 15px;
-      border: var(--ms-line);
-      border-inline-end-width: 0;
-      background: var(--ms-paper);
       font-size: var(--ms-text-xs);
       font-weight: 600;
       letter-spacing: var(--ms-track-wide);
       text-transform: uppercase;
       text-decoration: none;
+      text-underline-offset: 6px;
+      text-decoration-thickness: var(--ms-rule);
 
-      &:last-child {
-        border-inline-end-width: var(--ms-rule);
-      }
-
-      &:is(:hover, :active, [aria-current="page"]) {
-        background: var(--ms-ink);
-        color: var(--ms-paper);
-      }
-    }
-
-    @media (width <= 980px) {
-      inline-size: 100%;
-      overflow-x: auto;
-      scrollbar-width: none;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
-
-      & a {
-        flex: none;
-        justify-content: center;
-        padding-inline: 14px;
+      &:is(:hover, [aria-current="page"]) {
+        text-decoration-line: underline;
       }
     }
 
     @media (width <= 760px) {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      block-size: auto;
-      overflow: visible;
-      padding: 0 var(--ms-rule) var(--ms-rule) 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      inline-size: 100%;
+      border-block-start: var(--ms-hairline);
 
       & a {
+        display: flex;
+        align-items: center;
         block-size: var(--ms-touch);
-        margin: 0 calc(-1 * var(--ms-rule)) calc(-1 * var(--ms-rule)) 0;
-        padding-inline: var(--ms-space-1);
-        border-inline-end-width: var(--ms-rule);
-        font-size: var(--ms-text-2xs);
-        letter-spacing: var(--ms-track-caps);
+        border-block-end: var(--ms-hairline);
       }
-    }
-  }
-
-  /* Catalogue counts (restaurants, menus, last update): desktop only. */
-  .ms-counts {
-    display: flex;
-    gap: var(--ms-space-2);
-    block-size: var(--ms-control);
-
-    @media (width <= 980px) {
-      display: none;
-    }
-  }
-
-  .ms-count {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-inline: var(--ms-space-2);
-    font-family: var(--ms-font-mono);
-    line-height: 1.15;
-    white-space: nowrap;
-
-    & > span {
-      font-size: var(--ms-text-2xs);
-      letter-spacing: var(--ms-track-loose);
-    }
-
-    & > strong {
-      margin-block-start: 3px;
-      font-size: var(--ms-text-xs);
-      letter-spacing: var(--ms-track-tight);
     }
   }
 
@@ -875,16 +806,15 @@
       outline: 0;
     }
 
-    /* Typing a name: a large bare line, no box of its own. */
+    /* Typing a name: a field framed like the menus beside it, with a hint, not an empty box. */
     & input {
       inline-size: 100%;
       min-inline-size: 0;
-      padding: 0;
-      border: 0;
-      background: none;
       font-family: var(--ms-font-mono);
-      font-size: var(--ms-text-display);
-      font-weight: 700;
+
+      &::placeholder {
+        color: color-mix(in srgb, var(--ms-ink) 40%, transparent);
+      }
     }
 
     & select {
@@ -997,22 +927,119 @@
     border: var(--ms-line);
   }
 
+  /* Phones: the same finder, tightened so nothing wraps or gets cut on a 375–430 px screen. */
+  @media (width <= 760px) {
+    .ms-finder {
+      margin-block-end: var(--ms-space-5);
+    }
+
+    .ms-finder-tabs > button {
+      padding-block: 12px;
+      font-size: var(--ms-text-2xs);
+      letter-spacing: var(--ms-track-caps);
+    }
+
+    .ms-finder-body {
+      padding: var(--ms-space-3);
+    }
+
+    .ms-step {
+      padding: var(--ms-space-3);
+
+      & select {
+        font-size: var(--ms-text-base);
+      }
+    }
+
+    .ms-step-label {
+      flex-wrap: nowrap;
+
+      & > span:first-child {
+        min-inline-size: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .ms-budget-choices > button {
+      padding: 12px 0;
+      font-size: var(--ms-text-xs);
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .ms-finder-summary {
+      flex-wrap: wrap;
+      gap: var(--ms-space-1) var(--ms-space-3);
+      padding-block-start: var(--ms-space-3);
+
+      & > span {
+        white-space: nowrap;
+      }
+    }
+
+    .ms-finder .ms-input {
+      padding: 12px;
+      font-size: var(--ms-text-base);
+    }
+  }
+
   /* ---------- Page: home ---------- */
 
+  /* Home: the title and finder sit centred in the screen; a ruled footer closes the page at the bottom,
+     so a tall phone shows no loose empty half. */
   .ms-home {
+    display: flex;
+    flex-direction: column;
+    padding-block-end: 0;
     text-align: center;
 
     & .ms-title {
       max-inline-size: 760px;
-      margin: var(--ms-space-7) auto var(--ms-space-3);
-
-      @media (width <= 760px) {
-        margin-block-start: var(--ms-space-4);
-      }
+      margin: 0 auto var(--ms-space-3);
     }
 
     & .ms-finder {
+      /* In the centred column, auto margins would shrink it to its content: keep it full width (max 452 px). */
+      inline-size: 100%;
+      margin-block-end: 0;
       text-align: start;
+    }
+  }
+
+  .ms-home-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: var(--ms-space-6);
+
+    @media (width <= 760px) {
+      padding-block: var(--ms-space-5);
+    }
+  }
+
+  .ms-home-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ms-space-2) var(--ms-space-4);
+    padding-block: var(--ms-space-4) calc(var(--ms-space-5) + env(safe-area-inset-bottom, 0px));
+    border-block-start: var(--ms-line);
+    font-size: var(--ms-text-xs);
+    text-align: start;
+
+    & .ms-say-invite,
+    & .ms-open {
+      margin: 0;
+      font-size: inherit;
+    }
+
+    @media (width <= 760px) {
+      flex-direction: column;
+      gap: var(--ms-space-2);
     }
   }
 
@@ -1024,15 +1051,154 @@
     text-transform: uppercase;
   }
 
-  .ms-say-invite {
-    margin: var(--ms-space-5) auto var(--ms-space-4);
-    font-size: var(--ms-text-md);
+  .ms-open {
+    letter-spacing: var(--ms-track-snug);
   }
 
   .ms-more {
     margin-inline: auto;
     font-size: var(--ms-text-sm);
   }
+
+  /* Home on phones: no MENU button; the full menu sits under the logo as one row of boxes sharing their
+     borders, and its top border doubles as the header rule. */
+  @media (width <= 760px) {
+    .ms-shell:has(.ms-home) .ms-masthead.is-home {
+      padding-block-end: 0;
+      border-block-end: 0;
+    }
+
+    .ms-masthead.is-home {
+      & .ms-nav-toggle {
+        display: none;
+      }
+
+      & .ms-lang {
+        margin-inline: auto 0;
+      }
+
+      /* The menu row's own top border is the separator under the logo: one line, no gap. */
+      & .ms-nav-drawer {
+        display: flex;
+        inline-size: 100%;
+        margin-block-start: var(--ms-space-1);
+      }
+
+      & .ms-nav {
+        display: flex;
+        flex-direction: row;
+        inline-size: 100%;
+        border: 0;
+
+        & a {
+          flex: 1 1 auto;
+          justify-content: center;
+          block-size: var(--ms-touch);
+          padding-inline: var(--ms-space-2);
+          border: var(--ms-line);
+          border-inline-end-width: 0;
+          border-block-end: var(--ms-line);
+          font-size: var(--ms-text-2xs);
+          letter-spacing: var(--ms-track-caps);
+          text-decoration: none;
+
+          &:last-child {
+            border-inline-end-width: var(--ms-rule);
+          }
+
+          &:is(:hover, :active, [aria-current="page"]) {
+            background: var(--ms-ink);
+            color: var(--ms-paper);
+          }
+        }
+      }
+    }
+  }
+
+  /* Home, after a pass on mobile layout rules (2026-11-01):
+     - one alignment axis: everything starts on the left edge, like the finder and the footer;
+     - spacing on an 8 px scale, tighter inside a block than between blocks;
+     - one strong frame (the finder), lighter rules inside it;
+     - a rule under the header and one above the footer frame the page. Home only for now. */
+  .ms-shell:has(.ms-home) .ms-masthead {
+    border-block-end: var(--ms-line);
+  }
+
+  @media (width <= 760px) {
+    .ms-shell:has(.ms-home) .ms-masthead {
+      padding-block: max(16px, env(safe-area-inset-top, 0px)) 16px;
+    }
+
+    .ms-home {
+      text-align: start;
+
+      & .ms-title {
+        margin: 0 0 var(--ms-space-2);
+        font-size: 26px;
+        line-height: 1.1;
+      }
+
+      & .ms-promise {
+        margin: 0 0 var(--ms-space-5);
+      }
+    }
+
+    .ms-home-main {
+      justify-content: flex-start;
+      padding-block: var(--ms-space-6) var(--ms-space-6);
+    }
+
+    /* Inside the one strong frame: hairlines, and spacing on the 8 px scale. */
+    .ms-home .ms-finder-body {
+      padding: var(--ms-space-4) var(--ms-space-3);
+    }
+
+    .ms-home .ms-step {
+      padding: var(--ms-space-3);
+      border-width: 1px;
+    }
+
+    .ms-home .ms-step-label {
+      margin-block-end: var(--ms-space-2);
+    }
+
+    .ms-home .ms-budget-choices {
+      border-width: 1px;
+
+      & > button {
+        border-inline-end-width: 1px;
+      }
+    }
+
+    .ms-home .ms-step-arrow {
+      border-width: 1px;
+      inline-size: 32px;
+      block-size: 32px;
+    }
+
+    .ms-home .ms-finder .ms-input {
+      border-width: 1px;
+    }
+
+    /* One left edge for everything: the finder spans the column like the title, menu and footer. */
+    .ms-home .ms-finder {
+      max-inline-size: none;
+    }
+
+    .ms-home .ms-finder-summary {
+      padding: var(--ms-space-4) 0 0;
+    }
+
+    .ms-home .ms-button {
+      margin-block-start: var(--ms-space-2);
+    }
+
+    .ms-home-foot {
+      padding-block: var(--ms-space-4) calc(var(--ms-space-5) + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+
 
   /* ---------- Page: restaurant menu ---------- */
 

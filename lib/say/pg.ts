@@ -1,7 +1,7 @@
 import "server-only";
 
 import { Pool } from "pg";
-import type { NoteProof } from "@/lib/say/signature";
+import type { Eip712Proof } from "@/lib/say/signature";
 
 // Say storage on our own Postgres (infra/postgres/schema.sql), used when SAY_BACKEND=postgres.
 // DATABASE_URL logs in as mesasays_app: it can read published rows and call the say_* functions,
@@ -68,7 +68,7 @@ export async function getRow(id: string) {
 }
 
 /** Same functions and arguments as the Supabase RPC calls (supabase/say/*.sql). */
-export async function call(name: "say_post" | "say_reply", args: unknown[], proof: NoteProof | null) {
+export async function call(name: "say_post" | "say_reply", args: unknown[], proof: Eip712Proof | null) {
   const values = proof ? [...args, proof.signer, proof.signature, JSON.stringify(proof.payload)] : args;
   const fn = proof ? `${name}_signed` : name;
   const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");

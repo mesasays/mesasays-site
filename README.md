@@ -1,68 +1,82 @@
 # MesaSays
 
-**The Mexico City food guide written by the people who eat and the people who cook.**
+**The restaurant guide written by the people who eat and the people who cook.**
 It tells the truth about restaurants and wants them to do well. No restaurant pays to be in it.
+It starts in Mexico City.
 
-Live: https://mesasays.com · Films: [The Dining Dispatch](https://www.youtube.com/@TheDiningDispatch)
+Live: https://mesasays.com · Farcaster: the MesaSays account, fid 3357281
+· Films: [The Dining Dispatch](https://www.youtube.com/@TheDiningDispatch)
 
-*Español: la guía de comida de la Ciudad de México, escrita por quienes comen y quienes cocinan.*
+*Español: la guía de restaurantes escrita por quienes comen y quienes cocinan. Empieza en la Ciudad de México.*
 
-## What this is
+## Where we want to go
 
-- A restaurant guide for Mexico City: places, menus with prices, what to order, what to skip.
-- **Say**: open conversations about restaurants. No account, no stars, no scores.
-- No tracking: no analytics, no cookies, no request to Google when you load a page
-  (YouTube films load only when you press play).
+Restaurants do one of the most beautiful jobs there is, and the tools around them take a cut of
+everything: per-cover booking fees, review sites that sell visibility, platforms that keep the
+guest list. MesaSays wants to be the opposite, and to be **unable** to become that later:
+
+1. **A map of the world's restaurants, built city by city.** Anyone can open a city and do there
+   what we did for Mexico City: list the restaurants, their menus and prices, checked at the source.
+2. **Real reviews, not likes.** People who ate there say what to order and what to skip, signed by
+   their author. Later, a review can be tied to a real visit, so it can't be bought or faked.
+3. **Open tools for restaurants, built by a community of developers.** The first one is
+   **booking without a middleman**: an open format for a restaurant's availability, so any app or
+   assistant can book a table directly, with no commission and no one else owning the guest list.
+4. **Rules nobody can quietly change.** Open code, open data, posts that belong to their authors,
+   and an open network underneath, so that if MesaSays ever betrayed this, everyone could leave
+   with everything.
+
+What exists today is step 1 for one city, and the start of step 2. The rest is the plan.
+
+## What works today
+
+- **The guide** for Mexico City: restaurants, official menus with prices, what a meal costs,
+  dishes compared across places, films of the kitchens we visited.
+- **Say**: conversations about restaurants, on every restaurant page, **on Farcaster** (an open
+  social protocol, readable in any Farcaster app such as Firefly):
+  - Already on Farcaster? Reply from your app to any MesaSays conversation.
+  - Not on Farcaster? Write on mesasays.com and sign with **Face ID / a passkey** (no account, no
+    seed phrase) or an Ethereum wallet. The MesaSays account publishes it for you, with your
+    signature attached, so anyone can check the text is yours and was not changed by us.
+  - Every message the site shows is re-checked (its hash and signature) and must belong to a
+    MesaSays topic. Details: [`docs/SAY_FARCASTER.md`](docs/SAY_FARCASTER.md).
+- No tracking: no analytics, no cookies, no request to Google when you load a page.
 - **No token.** There is no coin, no airdrop, no points program.
 
 ## Status: what is open, and what is still centralized
 
-We would rather say it than have you find it. Today MesaSays is an ordinary website with
-open code and open data. It is not decentralized yet.
-
-| Part | Today | Where we want to go |
+| Part | Today | Next |
 |---|---|---|
-| Code | Open, AGPL-3.0 (this repo) | Same |
-| Restaurant data | Open, ODbL, in [`data/`](data/) (Google-free, see below) | Contribute facts back to OpenStreetMap |
-| Hosting | Vercel (one company) | Static mirror on IPFS, reachable without us |
-| Domain | `mesasays.com`, a normal registrar | Keep it, add a name nobody can seize |
-| Say posts | Supabase database (one company), we hold the only copy | Each post signed by its author and published on Farcaster; our database becomes a cache |
-| Identity | None: you pick a name, nothing proves it is you | Optional signature with an Ethereum key |
-| Moderation | One person (the founder) hides spam, no public log | Written rules, public moderation log, more moderators |
-| Development | Done in a private repository, exported here (see below) | Developed here, in the open |
+| Code | Open, AGPL-3.0 (this repo) | Develop here in the open, not in a private repo |
+| Restaurant data | Open, ODbL, in [`data/`](data/) (Google-free) | Contribute facts back to OpenStreetMap; let others open cities |
+| Conversations (Say) | On Farcaster, signed by their authors; read from a public hub | Run our own hub in the EU as a second source |
+| Hosting | Vercel (one company) | Static copy on IPFS behind `mesasays.eth`, reachable without us |
+| Moderation | One person; a MesaSays relay refuses unsigned posts | Written rules, a public moderation log, more moderators |
+| Booking | Each page shows the restaurant's own channel (phone, WhatsApp, its site) | An open availability format and a free booking module |
 
-The right-hand column is a plan, not a promise. Nothing in it is built yet.
-If you know how to do one of these well, we want to hear from you (open an issue).
+## How development works
 
-## How development works (and why it is not fully open yet)
+The site is developed in a private repository that also holds things we may not publish (raw data
+partly collected from sources like Google, and unrelated business tools). A script copies only the
+website code, from an explicit list of files, into this repository, and refuses anything that looks
+like a secret. This repository is the real code of mesasays.com; moving day-to-day development here
+is on the list.
 
-The website is developed in a private repository that also contains things we cannot publish:
-the raw restaurant data (part of it was collected from sources like Google, which we are not
-allowed to redistribute) and unrelated business tools. A script copies only the website code,
-from an explicit list of files, into this repository, and refuses to publish anything that
-looks like a secret. So this repository is the real code of mesasays.com, but the day-to-day
-history happens elsewhere for now. Moving development here is on the list above.
+## Signatures
 
-## Signed notes
-
-Posts and replies on Say can be signed with an Ethereum wallet (Rabby, MetaMask…). It is an
-EIP-712 typed-data signature (`eth_signTypedData_v4`): free, no transaction, no gas, tied to no
-chain. The signature, not our database, is the proof: each signed note carries the exact JSON
-that was signed (domain `MesaSays` v1, type
-`Note(kind, place, thread, parent, title, text, author, createdAt)`), and anyone can check it
-with viem or ethers `verifyTypedData`. The site checks every signature again each time it shows
-a post. A signature proves which address wrote the text, not who the person is; addresses we
-know are labelled. Unsigned posts are still welcome and are marked "not signed".
-Spec: `lib/say/signature.ts`, tests: `node scripts/test-signed-notes.mjs`.
+- **Wallet**: EIP-712 typed data (`eth_signTypedData_v4`), free, no transaction, tied to no chain.
+  Domain `MesaSays` v1, type `Note(kind, place, thread, parent, title, text, author, createdAt)`.
+- **Passkey**: a WebAuthn P-256 signature over the same note's EIP-712 digest.
+- **Farcaster**: every cast is Ed25519-signed by its account's app key; we rebuild its bytes and
+  re-check hash and signature before showing it.
+- Check a relayed note yourself: `node scripts/verify-cast.mjs <fid>-<hash>`, or the `/proof` page.
 
 ## The data
 
-`data/` holds the open dataset: restaurants (address, contact, hours, booking, map position)
-and **menus with prices** (tens of thousands of dishes). A field is included only if it comes
-from the restaurant itself (its website, menu, booking page or own Instagram), from
-OpenStreetMap, or from our own check of the official site. Nothing from Google, review sites
-or booking platforms. Map positions are computed from the address with OpenStreetMap
-Nominatim; each record says how precise its point is. See [data/README.md](data/README.md)
+`data/` holds the open dataset: restaurants (address, contact, hours, booking, map position) and
+**menus with prices**. A field is included only if it comes from the restaurant itself (its website,
+menu, booking page or own Instagram), from OpenStreetMap, or from our own check of the official
+site. Nothing from Google, review sites or booking platforms. See [data/README.md](data/README.md)
 and [DATA_LICENSE.md](DATA_LICENSE.md).
 
 ## Run it
@@ -74,33 +88,29 @@ npm run dev            # first run builds the catalog from data/ (open data, ODb
 
 - `npm run build`: same step, then checks the catalog, then builds the site.
 - `npm run data:open`: rebuild the catalog after editing `data/mesasays-cdmx.json` or `data/dishes.csv`.
-- The catalog is generated from `data/` into `restaurant-intelligence/v1/`, which is never committed.
-- Say (the conversations) needs a Supabase project of your own: copy `.env.example` to
-  `.env.local` and follow the comments. Without it the guide works and Say stays empty.
+- Say: set `SAY_BACKEND=farcaster` to read conversations from Farcaster (no key needed to read).
+  Publishing needs a Farcaster account and app key of your own: see `docs/SAY_FARCASTER.md`.
+- Tests: `node scripts/test-say-farcaster.mjs` and `node scripts/test-signed-notes.mjs`.
 
-Compared with mesasays.com, a build from the open data has no curated collections, no
-tasting-menu prices, and fewer map pins (only positions OpenStreetMap could confirm).
-
-Stack: Next.js, React, TypeScript, Tailwind. The design system lives in `app/styles/`.
+Stack: Next.js, React, TypeScript. The design system lives in `app/styles/`.
 
 ## Honesty
 
 - Restaurants never pay, for anything in the guide.
-- We say who we are: MesaSays is made by the team behind The Dining Dispatch, which films
+- We say who we are: MesaSays was started by the team behind The Dining Dispatch, which films
   restaurants. When we write about a place we filmed, we say so.
 - Sources are shown on every restaurant page.
 - Visual direction inspired by deepstate.sh; all code written independently by MesaSays.
 
 ## Licenses
 
-- **Code**: [AGPL-3.0](LICENSE). Anyone can read it, run it, fork it. If you run a modified
-  version online, you must publish your changes.
+- **Code**: [AGPL-3.0](LICENSE). If you run a modified version online, publish your changes.
 - **Data**: [ODbL 1.0](DATA_LICENSE.md), like OpenStreetMap.
-- **Posts**: belong to their authors, shared under CC BY-SA 4.0 (the posting form says so since
-  2026-10-31; posts written before that are not relicensed).
-- **Fonts**: Space Grotesk and Space Mono, SIL Open Font License 1.1 (see `app/fonts/`).
+- **Posts**: belong to their authors, shared under CC BY-SA 4.0.
+- **Fonts**: Space Grotesk and Space Mono, SIL Open Font License 1.1.
 
 ## Contributing
 
-Issues and pull requests are welcome, in English or Spanish. By contributing code you agree to
-license it under AGPL-3.0; by contributing data, under ODbL.
+Issues and pull requests are welcome, in English or Spanish. Want to open your city, or build an
+open tool for restaurants? Open an issue and say hello.
+By contributing code you agree to license it under AGPL-3.0; by contributing data, under ODbL.

@@ -17,6 +17,8 @@
     "predev": "node scripts/open-data-to-v1.mjs --if-missing"
   },
   "dependencies": {
+    "@farcaster/core": "0.20.0",
+    "@noble/curves": "1.9.1",
     "next": "^16.4.3",
     "pg": "^8.23.1",
     "react": "19.2.8",

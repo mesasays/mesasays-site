@@ -1,6 +1,9 @@
 import "server-only";
 
-import { checkStored, type NoteProof, type SayProof } from "@/lib/say/signature";
+import { isFarcasterBackend, farcasterSettings } from "@/lib/say/farcaster/config";
+import { isCastKey } from "@/lib/say/relayed";
+import { checkStored, type Eip712Proof } from "@/lib/say/signature";
+import type { SayThreadData } from "@/lib/say/types";
 
 // Say storage: the MesaSay Supabase project, reached over its REST API with the public key.
 // That key can only read published posts and call say_post / say_reply / say_post_signed / say_reply_signed
@@ -8,17 +11,15 @@ import { checkStored, type NoteProof, type SayProof } from "@/lib/say/signature"
 // again here on read, so a row that claims a signature it does not have shows as "signature invalid".
 // SAY_BACKEND=postgres switches storage to our own Postgres (lib/say/pg.ts, infra/postgres/schema.sql):
 // same functions, same row shape, same signature checks.
+// SAY_BACKEND=farcaster reads public Farcaster hubs instead (lib/say/farcaster/read.ts); writing then goes
+// through the relay (lib/say/farcaster/relay.ts), not through this file. See docs/SAY_FARCASTER.md.
 
-export type SayReply = { id: string; parentId: string | null; author: string; body: string; createdAt: string; proof: SayProof | null };
-export type SayThreadData = {
-  id: string;
-  title: string;
-  body: string;
-  author: string;
-  createdAt: string;
-  slugs: string[];
-  replies: SayReply[];
-  proof: SayProof | null;
+export type { SayReply, SayThreadData } from "@/lib/say/types";
+
+const farcaster = () => (isFarcasterBackend() ? import("@/lib/say/farcaster/read") : null);
+const readConfig = () => {
+  const settings = farcasterSettings();
+  return { mesasaysFid: settings.fid, origins: settings.origins, hubs: settings.hubs, channel: settings.channel, mesasaysSigner: settings.fid ? settings.signer : null };
 };
 
 type Signed = { signer?: string | null; signature?: string | null; signed_payload?: unknown };
@@ -47,6 +48,7 @@ class SayError extends Error {
     super(message);
   }
 }
+
 
 const postgres = () => (process.env.SAY_BACKEND === "postgres" ? import("@/lib/say/pg") : null);
 
@@ -93,6 +95,7 @@ async function readThreads(path: (select: string) => string): Promise<Row[]> {
 const stored = (row: Signed) => ({ signer: row.signer ?? null, signature: row.signature ?? null, payload: row.signed_payload ?? null });
 
 async function toThread(row: Row): Promise<SayThreadData> {
+  const source = { kind: "database" } as const;
   const replies = await Promise.all(
     row.say_replies.map(async (reply) => ({
       id: reply.id,
@@ -101,6 +104,7 @@ async function toThread(row: Row): Promise<SayThreadData> {
       body: reply.body,
       createdAt: reply.created_at,
       proof: await checkStored(stored(reply), { kind: "reply", thread: row.id, parent: reply.parent_id ?? "", title: "", text: reply.body, author: reply.author }),
+      source,
     })),
   );
   return {
@@ -112,13 +116,17 @@ async function toThread(row: Row): Promise<SayThreadData> {
     slugs: row.say_links.map((link) => link.restaurant_slug),
     replies: replies.sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
     proof: await checkStored(stored(row), { kind: "thread", thread: "", parent: "", title: row.title, text: row.body, author: row.author }),
+    source,
   };
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-export const isThreadId = (value: string) => UUID.test(value);
+/** A conversation id: a database UUID, or "<fid>-<hash>" for a Farcaster cast. */
+export const isThreadId = (value: string) => (isFarcasterBackend() ? isCastKey(value) : UUID.test(value));
 
-export async function listThreads({ slug, limit = 100 }: { slug?: string; limit?: number } = {}) {
+export async function listThreads({ slug, limit = 100 }: { slug?: string; limit?: number } = {}): Promise<SayThreadData[]> {
+  const fc = await farcaster();
+  if (fc) return fc.listFarcasterThreads({ slug, limit: Math.min(limit, 50) }, readConfig());
   const pg = await postgres();
   if (pg) return Promise.all((await pg.listRows({ slug, limit })).map(toThread));
   // A restaurant page asks for the conversations linked to it; !inner keeps only those.
@@ -138,8 +146,10 @@ export async function listThreads({ slug, limit = 100 }: { slug?: string; limit?
   return threads;
 }
 
-export async function getThread(id: string) {
+export async function getThread(id: string): Promise<SayThreadData | null> {
   if (!isThreadId(id)) return null;
+  const fc = await farcaster();
+  if (fc) return fc.getFarcasterThread(id, readConfig());
   const pg = await postgres();
   if (pg) {
     const row = await pg.getRow(id);
@@ -153,7 +163,7 @@ export async function getThread(id: string) {
 export const SIGNING_UNAVAILABLE = "signing unavailable";
 
 /** Signed calls need the functions from 20261101000000_signed_notes.sql; PGRST202 = function not found. */
-async function rpc(name: "say_post" | "say_reply", args: Record<string, unknown>, proof: NoteProof | null) {
+async function rpc(name: "say_post" | "say_reply", args: Record<string, unknown>, proof: Eip712Proof | null) {
   const pg = await postgres();
   if (pg) return pg.call(name, Object.values(args), proof);
   const body = proof ? { ...args, p_signer: proof.signer, p_signature: proof.signature, p_payload: proof.payload } : args;
@@ -165,10 +175,10 @@ async function rpc(name: "say_post" | "say_reply", args: Record<string, unknown>
   }
 }
 
-export async function createThread(input: { author: string; title: string; body: string; slug: string | null }, proof: NoteProof | null = null) {
+export async function createThread(input: { author: string; title: string; body: string; slug: string | null }, proof: Eip712Proof | null = null) {
   return rpc("say_post", { p_author: input.author, p_title: input.title, p_body: input.body, p_slug: input.slug }, proof);
 }
 
-export async function createReply(input: { threadId: string; parentId: string | null; author: string; body: string }, proof: NoteProof | null = null) {
+export async function createReply(input: { threadId: string; parentId: string | null; author: string; body: string }, proof: Eip712Proof | null = null) {
   return rpc("say_reply", { p_thread: input.threadId, p_parent: input.parentId, p_author: input.author, p_body: input.body }, proof);
 }
