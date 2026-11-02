@@ -91,6 +91,7 @@ export function FarcasterAccountSetup({ publicKey }: { publicKey: string | null 
   const [error, setError] = useState<string | null>(null);
   const [recovery, setRecovery] = useState<string>(CUSTODY);
   const say = (line: string) => setLog((lines) => [...lines, line]);
+  const [nameProof, setNameProof] = useState<{ timestamp: number; signature: string } | null>(null);
   const [wallets, setWallets] = useState<Announced[]>([]);
 
   // EIP-6963: each installed wallet announces itself; list them so Jules picks the one holding 0xA730.
@@ -192,6 +193,23 @@ export function FarcasterAccountSetup({ publicKey }: { publicKey: string | null 
       say(`Compte créé : fid ${fid}.`);
     });
 
+  // Step 5: "0xA730 owns mesasays.eth", signed for Farcaster (EIP-712, free, Ethereum mainnet domain).
+  // infra/farcaster/set-profile.mjs then publishes the proof and the profile with the app key.
+  const signName = () =>
+    run("preuve du nom", async () => {
+      await switchTo(mainnet);
+      const timestamp = Math.floor(Date.now() / 1000);
+      const signature = await wallet(mainnet).signTypedData({
+        domain: { name: "Farcaster name verification", version: "1", chainId: 1, verifyingContract: "0xe3be01d99baa8db9905b33a3ca391238234b79d1" },
+        types: { UserNameProof: [{ name: "name", type: "string" }, { name: "timestamp", type: "uint256" }, { name: "owner", type: "address" }] },
+        primaryType: "UserNameProof",
+        // Farcaster name (fname) "mesasays": mesasays.eth is on ENS v2, which Farcaster does not read yet (2026-11-02).
+        message: { name: "mesasays", timestamp: BigInt(timestamp), owner: CUSTODY },
+      });
+      setNameProof({ timestamp, signature });
+      say("Preuve du nom signée. Copie la ligne ci-dessous et envoie-la à Claude.");
+    });
+
   const addKey = () =>
     run("ajout de la clé", async () => {
       if (!publicKey || !state?.fid) throw new Error("Il manque le fid ou la clé d'application.");
@@ -285,7 +303,21 @@ export function FarcasterAccountSetup({ publicKey }: { publicKey: string | null 
         </>
       ) : null}
 
-      {done ? <p><strong>Terminé.</strong> Compte MesaSays : fid {String(state?.fid)}. Dis-le à Claude pour la suite (nom, chaîne, mise en ligne).</p> : null}
+      {done ? <p><strong>Terminé.</strong> Compte MesaSays : fid {String(state?.fid)}.</p> : null}
+
+      {account && done ? (
+        <>
+          <h2>5. Le nom @mesasays</h2>
+          <p>
+            Une signature gratuite (pas de transaction) : « 0xA730…0350 réclame le nom Farcaster mesasays pour le compte{" "}
+            {String(state?.fid)} ». MetaMask passe sur Ethereum pour signer. (mesasays.eth est sur ENS v2, que Farcaster ne lit pas encore.)
+          </p>
+          <button type="button" className="ms-button" disabled={Boolean(busy)} onClick={signName}>Signer pour @mesasays (gratuit)</button>
+          {nameProof ? (
+            <pre className="say-json" style={{ whiteSpace: "pre-wrap" }}>{`${nameProof.timestamp} ${nameProof.signature}`}</pre>
+          ) : null}
+        </>
+      ) : null}
       {busy ? <p>En cours : {busy}… regarde ton portefeuille.</p> : null}
       {error ? <p className="say-error" role="alert">{error}</p> : null}
       {log.length ? <pre className="say-json">{log.join("\n")}</pre> : null}

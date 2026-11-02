@@ -149,6 +149,7 @@ async function toThread(root: HubMessage, config: ReadConfig): Promise<SayThread
       return { id: castKey(message.data.fid, message.hash), parentId, author: reply.author, body: reply.body, createdAt: reply.createdAt, proof: reply.proof, source: reply.source, cast: reply.cast };
     }),
   );
+  const castTime = new Map(tree.map(({ message }) => [castKey(message.data.fid, message.hash), message.data.timestamp]));
   const topic = root.data.castAddBody?.parentUrl ?? undefined;
   const slug = slugFromTopic(topic);
   const slugs = [...new Set([...(slug ? [slug] : []), ...linkedSlugs(root)])];
@@ -159,7 +160,9 @@ async function toThread(root: HubMessage, config: ReadConfig): Promise<SayThread
     author: post.author,
     createdAt: post.createdAt,
     slugs,
-    replies: replies.sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+    // Migrated replies share one date (the old day): break ties with each cast's real Farcaster time,
+    // which follows the original order.
+    replies: replies.sort((a, b) => a.createdAt.localeCompare(b.createdAt) || (castTime.get(a.id) ?? 0) - (castTime.get(b.id) ?? 0)),
     proof: post.proof,
     source: post.source,
     cast: post.cast,

@@ -2,7 +2,7 @@
 
 Say (the conversations on restaurant pages and at /say) lives on the open Farcaster network, not in our
 database: `SAY_BACKEND=farcaster`. Status on 2026-11-01: **reading and writing are live.** The MesaSays account
-is fid 3357281 (custody and recovery 0xA730…0350 on Optimism), app key `0x3359…43d5` (`MESASAYS_APP_KEY` in
+is **@mesasays**, fid 3357281 (custody and recovery 0xA730…0350 on Optimism; fname registered 2026-11-02, since mesasays.eth is on ENS v2 which Farcaster does not read yet), app key `0x3359…43d5` (`MESASAYS_APP_KEY` in
 `lib/say/farcaster/config.ts`). The two Supabase-era conversations are migrated with
 `scripts/migrate-say-to-farcaster.mjs` (export in `supabase/say/export/`).
 
@@ -84,7 +84,7 @@ node scripts/test-signed-notes.mjs      # 14 tests
 ## Still to do
 
 1. The /mesasays channel (Jules creates it; public act), then set `SAY_FARCASTER_CHANNEL_URL`.
-2. A username and profile for the account (`mesasays.eth` as an ENS username needs a proof Jules signs).
+2. Switch the username to `mesasays.eth` once Farcaster reads ENS v2 (`node infra/farcaster/set-profile.mjs <ts> <sig>`).
 3. Moderation: a way to hide a reply under a MesaSays conversation, and a public log.
 4. A second, independent hub (ours, EU) as fallback.
 5. Delete the Supabase project `zwnpwnqyqnhqxafjorte`, with Jules' OK, once production has run on Farcaster.

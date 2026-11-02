@@ -4,7 +4,7 @@
 It tells the truth about restaurants and wants them to do well. No restaurant pays to be in it.
 It starts in Mexico City.
 
-Live: https://mesasays.com · Farcaster: the MesaSays account, fid 3357281
+Live: https://mesasays.com · Farcaster: [@mesasays](https://farcaster.xyz/mesasays) (fid 3357281)
 · Films: [The Dining Dispatch](https://www.youtube.com/@TheDiningDispatch)
 
 *Español: la guía de restaurantes escrita por quienes comen y quienes cocinan. Empieza en la Ciudad de México.*
