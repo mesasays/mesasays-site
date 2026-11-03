@@ -12,21 +12,45 @@ Live: https://mesasays.com · Farcaster: [@mesasays](https://farcaster.xyz/mesas
 ## Where we want to go
 
 Restaurants do one of the most beautiful jobs there is, and the tools around them take a cut of
-everything: per-cover booking fees, review sites that sell visibility, platforms that keep the
-guest list. MesaSays wants to be the opposite, and to be **unable** to become that later:
+everything: around 4% of every card payment, 25–30% of every delivery order, per-cover booking
+fees, review sites that sell visibility, platforms that keep the guest list. MesaSays wants to be
+the opposite, and to be **unable** to become that later.
+
+Soon, most tables will not be booked by people scrolling reviews but by **AI agents** booking for
+them, and paying on their own (stablecoins, [x402](https://www.x402.org/)). Agents have no brand
+loyalty: they go where the data is true and the door is open. And the more agents decide, the more
+it pays to fake reviews. So MesaSays wants to be **the source of truth about restaurants that any
+person or agent can read, check and book from**, with no one in the middle taking a cut.
 
 1. **A map of the world's restaurants, built city by city.** Anyone can open a city and do there
    what we did for Mexico City: list the restaurants, their menus and prices, checked at the source.
-2. **Real reviews, not likes.** People who ate there say what to order and what to skip, signed by
-   their author. Later, a review can be tied to a real visit, so it can't be bought or faked.
-3. **Open tools for restaurants, built by a community of developers.** The first one is
-   **booking without a middleman**: an open format for a restaurant's availability, so any app or
-   assistant can book a table directly, with no commission and no one else owning the guest list.
-4. **Rules nobody can quietly change.** Open code, open data, posts that belong to their authors,
+2. **Signed visits.** A code at the table, signed by the restaurant and scanned by the guest, proves
+   "I was there". It creates a public attestation that no platform owns.
+3. **Real reviews, tied to real visits.** People who ate there say what to order and what to skip,
+   signed by their author. A review linked to a signed visit can't be bought or faked, by a person
+   or by a bot.
+4. **Booking without a middleman, built for people and agents.** An open, signed format for a
+   restaurant's availability, so any app or agent can book a table directly. Against no-shows (and
+   agents booking four tables to keep one), a small automatic deposit, returned at check-in. Every
+   honored visit builds a portable reliability record: reliable guests stop being asked for a
+   deposit, everywhere on the network.
+5. **Rules nobody can quietly change.** Open code, open data, posts that belong to their authors,
    and an open network underneath, so that if MesaSays ever betrayed this, everyone could leave
    with everything.
 
-What exists today is step 1 for one city, and the start of step 2. The rest is the plan.
+What exists today is step 1 for one city, and the start of step 3. The rest is the plan, starting
+with making the guide readable by AI assistants (an MCP server) and publishing the open booking
+format for comments.
+
+## Who pays (never the restaurant)
+
+The raw data stays open and free (ODbL). What can be paid for is what costs work: fresh, verified
+answers and bookings, paid **by the apps and agents that use them**, in cents per request or per
+booking, never by the restaurant and never as a commission on the bill. That money should go to
+the people who build and keep the network alive: developers of the open tools, the people who keep
+a city up to date, those who verify. How exactly is an open question, and will be decided in the
+open. There is still **no token**: if one ever exists, it will come after real use, and pay for work,
+never for the number of posts.
 
 ## What works today
 
@@ -52,7 +76,7 @@ What exists today is step 1 for one city, and the start of step 2. The rest is t
 | Conversations (Say) | On Farcaster, signed by their authors; read from a public hub | Run our own hub in the EU as a second source |
 | Hosting | Vercel (one company) | Static copy on IPFS behind `mesasays.eth`, reachable without us |
 | Moderation | One person; a MesaSays relay refuses unsigned posts | Written rules, a public moderation log, more moderators |
-| Booking | Each page shows the restaurant's own channel (phone, WhatsApp, its site) | An open availability format and a free booking module |
+| Booking | Each page shows the restaurant's own channel (phone, WhatsApp, its site) | An open availability format, signed visits, and a free booking module that people and agents can use |
 
 ## How development works
 
