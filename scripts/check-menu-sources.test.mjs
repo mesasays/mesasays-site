@@ -27,3 +27,17 @@ test("social sources never trigger automated browser scraping", async () => {
     () => { throw new Error("Must not fetch social posts"); });
   assert.equal(result.status, "manual_source");
 });
+
+test("a PDF or image menu served from the restaurant's own site is fingerprinted by content", async () => {
+  const site = { slug: "pdf-site", url: "https://example.org/s/menu.pdf", publication: { coverage: "food_menu", checkedAt: "2026-10-07", recheckAfter: "2026-11-06" } };
+  const pdf = Buffer.from("%PDF-1.7 menu tacos 100 MXN");
+  const first = await checkSource(site, undefined, async () => new Response(pdf, { headers: { "content-type": "application/pdf" } }));
+  assert.equal(first.status, "baseline");
+  assert.equal(first.kind, "pdf");
+  const same = await checkSource(site, { sourceUrl: site.url, fingerprint: first.fingerprint }, async () => new Response(pdf));
+  assert.equal(same.status, "unchanged");
+  const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 1, 2, 3]);
+  const image = await checkSource({ ...site, url: "https://example.org/menu.png" }, undefined, async () => new Response(png, { headers: { "content-type": "image/png" } }));
+  assert.equal(image.kind, "image");
+  assert.equal(image.status, "baseline");
+});

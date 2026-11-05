@@ -21,7 +21,7 @@ export default async function SayPage() {
   return (
     <main className="ms-page ms-say-page">
       <h1 className="ms-title say-page-title">What people say</h1>
-      <p className="say-page-lede">Ask about a restaurant, or say what you ate: what to order, what to skip. No stars, no scores.</p>
+      <p className="say-page-lede">Ask, or say what to order and what to skip. No stars.</p>
       <SayFeed threads={threads} places={places} mode={sayMode()} />
     </main>
   );

@@ -139,6 +139,8 @@ export const paths = {
   about: (locale: Locale) => (locale === "es" ? "/es/acerca" : "/about"),
   methodology: (locale: Locale) => (locale === "es" ? "/es/metodologia" : "/methodology"),
   privacy: (locale: Locale) => (locale === "es" ? "/es/privacidad" : "/privacy"),
+  decentralized: (locale: Locale) => (locale === "es" ? "/es/descentralizado" : "/decentralized"),
+  unbiased: (locale: Locale) => (locale === "es" ? "/es/imparcial" : "/unbiased"),
 };
 
 // English and Spanish budget slugs ("under-800-pesos" ↔ "menos-de-800-pesos").
@@ -161,6 +163,8 @@ export function alternatePath(pathname: string, target: Locale): string {
     [/^\/about$/, () => "/es/acerca", /^\/es\/acerca$/, () => "/about"],
     [/^\/methodology$/, () => "/es/metodologia", /^\/es\/metodologia$/, () => "/methodology"],
     [/^\/privacy$/, () => "/es/privacidad", /^\/es\/privacidad$/, () => "/privacy"],
+    [/^\/decentralized$/, () => "/es/descentralizado", /^\/es\/descentralizado$/, () => "/decentralized"],
+    [/^\/unbiased$/, () => "/es/imparcial", /^\/es\/imparcial$/, () => "/unbiased"],
     [/^\/$/, () => "/es", /^\/es$/, () => "/"],
   ];
   for (const [enPattern, toEs, esPattern, toEn] of pairs) {

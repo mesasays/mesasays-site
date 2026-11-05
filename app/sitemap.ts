@@ -151,7 +151,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: path.split("/").length <= 3 ? 0.9 : 0.8,
     })),
-    ...["/films", "/es/peliculas", "/about", "/es/acerca", "/methodology", "/es/metodologia", "/privacy", "/es/privacidad"].map((path) => ({
+    ...["/films", "/es/peliculas", "/about", "/es/acerca", "/methodology", "/es/metodologia", "/privacy", "/es/privacidad", "/unbiased", "/es/imparcial"].map((path) => ({
       url: absoluteUrl(path),
       lastModified: catalogLastMod,
       changeFrequency: "monthly" as const,

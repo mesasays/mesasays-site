@@ -160,9 +160,39 @@ for (const slug of siteFiles) {
     fail(`${slug} became indexable`);
   }
 }
+// Instagram-only restaurants (waves/CONTRACT_IG.md): the account is their identity, so it must be valid,
+// unique in the catalog, with no website link and an official menu of at least 3 dishes (relaxed 2026-11-03).
+const igOf = (value) => {
+  const text = (value ?? "").toString().trim();
+  const handle = (text.match(/instagram\.com\/([A-Za-z0-9_.]{1,30})/i)?.[1] ?? text).replace(/^@/, "").replace(/\/+$/, "").toLowerCase();
+  return /^[a-z0-9_.]{2,30}$/.test(handle) ? handle : null;
+};
+const igOwners = new Map();
+for (const slug of [...siteFiles, ...remaining]) {
+  const path = siteFiles.includes(slug) ? resolve(siteRoot, "restaurants", `${slug}.json`) : resolve(v1Root, "enriched", `${slug}.json`);
+  const handle = igOf(readJson(path).contact?.instagram);
+  if (handle) igOwners.set(handle, [...(igOwners.get(handle) ?? []), slug]);
+}
+const checkInstagramOnly = (slug, record) => {
+  if (record.contact?.websiteIsInstagram !== true) return;
+  const handle = igOf(record.contact?.instagram);
+  if (!handle) fail(`${slug}: Instagram-only record without a valid Instagram handle`);
+  // Before 2026-11-04 (122 records) the website field held the Instagram profile itself: allowed if it is the same account.
+  if (record.contact?.website) {
+    if (igOf(record.contact.website) !== handle) fail(`${slug}: Instagram-only website is not the profile of @${handle}`);
+    return;
+  }
+  // New format (CONTRACT_IG.md, website null): stricter rules.
+  if ((igOwners.get(handle) ?? []).length > 1) fail(`${slug}: Instagram-only account @${handle} is shared with ${igOwners.get(handle).filter((s) => s !== slug).join(", ")}`);
+  const menuPath = resolve(v1Root, "menus", `${slug}.json`);
+  const items = existsSync(menuPath) ? (readJson(menuPath).items ?? []).length : 0;
+  if (items < 3) fail(`${slug}: Instagram-only record needs at least 3 menu dishes (has ${items})`);
+};
+
 for (const slug of remaining) {
   const record = readJson(resolve(v1Root, "enriched", `${slug}.json`));
   checkLinks(slug, record);
+  checkInstagramOnly(slug, record);
   if (record.seo?.indexable === true) {
     indexable += 1;
     fail(`${slug} enriched record is indexable`);

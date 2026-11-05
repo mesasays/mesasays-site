@@ -7,6 +7,7 @@ import type {
   SiteRestaurant,
 } from "@/lib/restaurants/types";
 import { slugifyLabel } from "@/lib/restaurants/paths";
+import { menuSourceTooOld } from "@/lib/restaurants/menu-publication";
 
 export type V1RegistryEntry = {
   name: string;
@@ -362,8 +363,10 @@ export function restaurantFromEnriched(record: V1EnrichedRecord): SiteRestaurant
   };
 }
 
-export function applyV1Menu(restaurant: SiteRestaurant, menu: V1MenuFile | null): SiteRestaurant {
+export function applyV1Menu(restaurant: SiteRestaurant, menu: V1MenuFile | null, now = new Date()): SiteRestaurant {
   if (!menu) return restaurant;
+  // Menu older than 12 months by its own date: not published (the page keeps its other facts).
+  if (menuSourceTooOld(menu.publication?.sourceDate, now)) return restaurant;
 
   const items: MenuItem[] = (menu.items ?? []).map((item, index) => ({
     id: item.id ?? `${restaurant.slug}-menu-${index}`,

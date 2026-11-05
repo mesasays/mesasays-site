@@ -50,14 +50,37 @@ export function restaurantPlace(restaurant: SiteRestaurant) {
 const searchArea = (restaurant: SiteRestaurant) => priceArea(restaurant) ?? placeName(restaurant);
 const yearOf = (iso: string | null | undefined) => (iso ? iso.slice(0, 4) : null);
 
+// Titles: the first candidate that fits TITLE_MAX wins (the " · Mesasays" suffix comes after and may be cut by Google).
+// With a priced menu the cost per person goes in the title (what "precios de …" searches want); without a menu,
+// the title names only what the page really holds (address, hours, booking), which matches "<name> <area>" searches.
+const TITLE_MAX = 62;
+const firstFitting = (candidates: Array<string | null>) =>
+  candidates.find((c): c is string => Boolean(c) && (c as string).length <= TITLE_MAX) ?? candidates.filter(Boolean).at(-1)!;
+const nameWithArea = (restaurant: SiteRestaurant, area: string) =>
+  restaurant.name.toLowerCase().includes(area.toLowerCase()) ? restaurant.name : `${restaurant.name} ${area}`;
+
 export function restaurantTitle(restaurant: SiteRestaurant) {
   const publication = restaurant.menu.publication;
+  const area = searchArea(restaurant);
   if (publication) {
     const priced = menuHasPrices(restaurant) && !menuNeedsRecheck(restaurant);
     const topic = priced ? `menu & prices (${yearOf(publication.checkedAt)})` : "menu";
-    return `${restaurant.name} ${topic} — ${searchArea(restaurant)}, ${SITE_CITY}`;
+    const meal = priced ? quickFacts(restaurant).meal : null;
+    return firstFitting([
+      meal ? `${restaurant.name} ${topic}, ≈${pesos(meal.estimate)} — ${area}` : null,
+      `${restaurant.name} ${topic} — ${area}, ${SITE_CITY}`,
+      `${restaurant.name} ${topic} — ${area}`,
+    ]);
   }
-  return `${restaurant.name} — ${searchArea(restaurant)}, ${SITE_CITY}`;
+  const has = [
+    restaurant.location.address ? "address" : null,
+    restaurant.experience.hours.length ? "hours" : null,
+    quickFacts(restaurant).booking ? "booking" : null,
+  ].filter((x): x is string => Boolean(x));
+  return firstFitting([
+    has.length ? `${nameWithArea(restaurant, area)}: ${joinList(has, "&")}` : null,
+    `${restaurant.name} — ${area}, ${SITE_CITY}`,
+  ]);
 }
 
 // Search snippet: name and area first (they match the query), then what the page holds
@@ -321,12 +344,26 @@ export function collectionDescription(
 
 export function restaurantTitleEs(restaurant: SiteRestaurant) {
   const publication = restaurant.menu.publication;
+  const area = searchArea(restaurant);
   if (publication) {
     const priced = menuHasPrices(restaurant) && !menuNeedsRecheck(restaurant);
     const topic = priced ? `menú y precios ${yearOf(publication.checkedAt)}` : "menú";
-    return `${restaurant.name}: ${topic} — ${searchArea(restaurant)}, CDMX`;
+    const meal = priced ? quickFacts(restaurant).meal : null;
+    return firstFitting([
+      meal ? `${restaurant.name}: ${topic} (≈${pesos(meal.estimate)}) — ${area}` : null,
+      `${restaurant.name}: ${topic} — ${area}, CDMX`,
+      `${restaurant.name}: ${topic} — ${area}`,
+    ]);
   }
-  return `${restaurant.name} — ${searchArea(restaurant)}, CDMX`;
+  const has = [
+    restaurant.location.address ? "dirección" : null,
+    restaurant.experience.hours.length ? "horarios" : null,
+    quickFacts(restaurant).booking ? "reservación" : null,
+  ].filter((x): x is string => Boolean(x));
+  return firstFitting([
+    has.length ? `${nameWithArea(restaurant, area)}: ${joinList(has, "y")}` : null,
+    `${restaurant.name} — ${area}, CDMX`,
+  ]);
 }
 
 export function restaurantDescriptionEs(restaurant: SiteRestaurant) {

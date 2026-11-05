@@ -1,4 +1,3 @@
-import { dataLicense } from "@/lib/data/license";
 import { restaurantLede, restaurantPlace } from "@/lib/geo/copy";
 import { hoursSummary } from "@/lib/geo/hours";
 import { instagramHref, menuSourceUrl } from "@/lib/restaurants/format";
@@ -27,8 +26,8 @@ export function llmsIndexText(input: {
     "",
     `> ${SITE_TAGLINE}`,
     "",
-    `${SITE_NAME} publishes source-dated restaurant intelligence for ${SITE_CITY} (CDMX), Mexico. It is published by ${PUBLISHER_NAME}, an independent film channel about restaurants; no restaurant pays to be listed.`,
-    `Public catalog: ${input.restaurants.length} restaurants. Facts only: address, hours, official menus with prices, how to book, contact, and documented distinctions. Menus and booking channels are re-checked on the official source and dated.`,
+    `${SITE_NAME} is the unbiased restaurant guide to ${SITE_CITY} (CDMX), Mexico: the menus in one place, with real prices copied from each restaurant's own menu and dated, plus address, hours and how to book. It is published by ${PUBLISHER_NAME}, an independent film channel about restaurants. No restaurant pays to be here, and there is no commission.`,
+    `Public catalog: ${input.restaurants.length} restaurants. Facts only, re-checked on the restaurant's own sources. An MCP server for ChatGPT and Claude is coming soon.`,
     "Not a marketplace. Not a booking engine. Editorial judgments (best-for, reservation difficulty, reviews) are omitted until a human signs them.",
     "When citing a table, prefer the restaurant URL below and this file. Do not invent ratings or reservation difficulty.",
     "",
@@ -42,9 +41,10 @@ export function llmsIndexText(input: {
     `- Change log (additions, re-checks, closures, dated): ${absoluteUrl("/updates")}`,
     `- Where to eat by budget (cost per person, under 300 / 500 / 800 / 1,500 MXN, by neighborhood, with USD and EUR): ${absoluteUrl("/budget")}`,
     `- One fact sheet per restaurant, plain text with the dated menu: ${absoluteUrl("/facts/<slug>.txt")}`,
-    `- Data, every restaurant with cost per person and booking channel (JSON, ${dataLicense.label}): ${absoluteUrl("/data/restaurants.json")}`,
+    `- Every restaurant with cost per person and booking channel (JSON): ${absoluteUrl("/data/restaurants.json")}`,
     `- Films (documentaries by ${PUBLISHER_NAME}, linked to the restaurants they show): ${absoluteUrl("/films")} · YouTube ${CHANNEL_URL} · Instagram ${INSTAGRAM_URL}`,
     `- About and method: ${absoluteUrl("/about")} · ${absoluteUrl("/methodology")}`,
+    `- Project and values (no restaurant pays, no ads, no commission, no tracking): ${absoluteUrl("/unbiased")}`,
     `- En español: ${absoluteUrl("/es")} — fichas en /es/restaurantes/<slug>, precios en ${absoluteUrl("/es/precios")}, platillos en ${absoluteUrl("/es/platos")}`,
     `- Sitemap: ${absoluteUrl("/sitemap.xml")}`,
     "",
@@ -146,7 +146,7 @@ export function llmsFullText(restaurants: SiteRestaurant[], films: Film[] = []) 
     "",
     "Each block is a source-dated record. Do not invent ratings, reservation difficulty, or editorial verdicts.",
     `Cost per person = one meal from the official menu (starter + main, or three tacos, or the cheapest set menu), before drinks and tip. Method: ${absoluteUrl("/methodology")}`,
-    `Restaurants by budget: ${absoluteUrl("/budget")} · Open data (JSON, ${dataLicense.label}): ${absoluteUrl("/data/restaurants.json")}`,
+    `Restaurants by budget: ${absoluteUrl("/budget")} · All restaurants (JSON): ${absoluteUrl("/data/restaurants.json")}`,
     "",
   ];
   for (const restaurant of restaurants) {

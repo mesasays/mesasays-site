@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { JsonLd } from "@/components/JsonLd";
 import { FX_DATE } from "@/lib/currency";
-import { OPEN_DATASET_URL, dataLicense } from "@/lib/data/license";
 import { formatDate, paths, type Locale } from "@/lib/i18n";
 import { filmThumb, filmUploadDate, type Film } from "@/lib/restaurants/films";
 import { MIN_PRICED_DISHES } from "@/lib/restaurants/stats";
@@ -99,24 +98,18 @@ export function AboutView({ counts, films, locale }: { counts: CatalogCounts; fi
         </p>
       </Panel>
 
-      <Panel title={es ? "Datos abiertos" : "Open data"}>
+      <Panel title={es ? "Datos" : "Data"}>
         <p>
-          {es ? "Todo el catálogo se puede descargar en " : "The whole catalog can be downloaded as "}
+          {es ? "Todo el catálogo se puede consultar en " : "The whole catalog can be read as "}
           <a href="/data/restaurants.json" className="ms-link">JSON</a>
-          {dataLicense.license
-            ? es
-              ? " bajo licencia ODbL 1.0 (cita a Mesasays). "
-              : " under the ODbL 1.0 licence (credit Mesasays). "
-            : es
-              ? ", solo como referencia: mezcla datos de fuentes que no podemos volver a licenciar, así que este archivo no da permiso de reutilización. "
-              : " for reference only: it mixes facts from sources we may not relicense, so this file comes with no reuse licence. "}
+          {es ? ", solo como referencia (sin licencia de reutilización). " : ", for reference only (no reuse licence). "}
           {es ? "Cada restaurante tiene también una ficha en texto plano en /facts/<slug>.txt." : "Every restaurant also has a plain-text fact sheet at /facts/<slug>.txt."}{" "}
           <Link href={paths.methodology(locale) as never} className="ms-link">{es ? "Cómo verificamos" : "How we check"} <span aria-hidden="true">→</span></Link>
         </p>
         <p>
           {es
-            ? <>Para reutilizar los datos, usa el <External href={OPEN_DATASET_URL}>conjunto de datos abierto</External> (ODbL 1.0, sin datos de Google). El código del sitio también es abierto: <External href={PUBLIC_REPO_URL}>AGPL-3.0</External>.</>
-            : <>To reuse the data, take the <External href={OPEN_DATASET_URL}>open dataset</External> (ODbL 1.0, no Google data). The site code is open too: <External href={PUBLIC_REPO_URL}>AGPL-3.0</External>.</>}
+            ? <>El código del sitio es abierto: <External href={PUBLIC_REPO_URL}>AGPL-3.0</External>.</>
+            : <>The site code is open source: <External href={PUBLIC_REPO_URL}>AGPL-3.0</External>.</>}
         </p>
         <p>
           <Link href={paths.privacy(locale) as never} className="ms-link">{es ? "Privacidad" : "Privacy"} <span aria-hidden="true">→</span></Link>
@@ -134,26 +127,24 @@ export function AboutView({ counts, films, locale }: { counts: CatalogCounts; fi
 export function MethodologyView({ counts, locale }: { counts: CatalogCounts; locale: Locale }) {
   const es = locale === "es";
   const checked = formatDate(counts.latestCheck, locale);
+  const bands = (loc: string) =>
+    `$ ≤ ${PRICE_SYMBOL_BANDS[0]}, $$ ≤ ${PRICE_SYMBOL_BANDS[1]}, $$$ ≤ ${PRICE_SYMBOL_BANDS[2].toLocaleString(loc)}, $$$$ > ${PRICE_SYMBOL_BANDS[2].toLocaleString(loc)}`;
   const sections: Array<[string, string]> = es
     ? [
-        ["Qué entra al catálogo", "Un restaurante entra solo si su sitio oficial (o su Instagram oficial enlazado desde él) confirma la dirección, y si tiene una carta oficial o un Instagram verificado y un canal de contacto. Las listas de prensa (Time Out, The Infatuation, Chilango, Local.mx y otras) sirven para descubrir lugares; nunca son la fuente de un dato. Bares y cafés sin carta quedan fuera."],
-        ["De dónde vienen los precios", "Solo de la carta propia del restaurante: su sitio web, su PDF o su página oficial de pedidos. No usamos precios de apps de entrega (suelen ser más altos), ni de reseñas, ni de bases de datos de terceros. Cada platillo se transcribe con su sección, su precio en pesos tal como aparece y la fecha de verificación. Se descartan precios menores a 15 pesos (suelen ser extras)."],
-        ["Fechas y revisión", "Cada carta lleva la fecha en que se verificó y una fecha de revisión 30 días después. Una carta vencida sale de las estadísticas y del cálculo de costo por persona hasta que se vuelve a verificar; la ficha lo indica."],
-        ["Costo por persona", `Estimado con la carta oficial: entrada mediana más plato fuerte mediano; un plato fuerte si no hay entradas; tres tacos en una taquería; un desayuno en un lugar de desayunos; o el menú fijo más económico en un restaurante de degustación. Sin bebidas, postres, guarniciones ni propina (10–15 % en México). Sin una carta con secciones y precios no hay estimación. Equivalentes en dólares y euros con el tipo de referencia del Banco Central Europeo del ${FX_DATE}.`],
-        ["Símbolos $ a $$$$", `Calculados con nuestro costo por persona, nunca con Google ni con otra fuente externa: $ hasta ${PRICE_SYMBOL_BANDS[0]} pesos, $$ hasta ${PRICE_SYMBOL_BANDS[1]}, $$$ hasta ${PRICE_SYMBOL_BANDS[2].toLocaleString("es-MX")}, $$$$ más de ${PRICE_SYMBOL_BANDS[2].toLocaleString("es-MX")}. Sin estimación de costo no hay símbolo.`],
-        ["Índice de precios", `Un restaurante necesita al menos ${MIN_PRICED_DISHES} platillos con precio para tener mediana; una colonia o tipo de cocina necesita al menos 3 restaurantes así. Las cifras de grupo son la mediana de las medianas.`],
-        ["Reservaciones, Instagram y mapa", "El canal de reservación solo se publica si el sitio oficial lo enlaza o lo indica (OpenTable, Resy, WhatsApp, teléfono o sin reservación). El Instagram solo si el sitio oficial lo enlaza. La ubicación en el mapa se revisa contra la dirección verificada (OpenStreetMap)."],
-        ["Lo que no hacemos", "No evadimos protecciones anti-robots ni CAPTCHAs: si una página bloquea la consulta, el dato no se publica. No usamos datos pagados ni inventamos lo que falta. Un restaurante cerrado se retira y el cierre queda registrado en novedades."],
+        ["Qué entra", "Solo si el sitio oficial (o el Instagram que enlaza) confirma la dirección, con carta oficial o Instagram verificado, y un contacto. Las listas de prensa sirven para descubrir, nunca como fuente. Bares y cafés sin carta: fuera."],
+        ["Precios y fechas", "Solo de la carta del restaurante: sitio, PDF o página oficial de pedidos. Nunca apps de entrega, reseñas ni bases de terceros. Cada platillo: sección, precio en pesos tal cual, fecha. Menos de 15 pesos: descartado. Cada carta se revisa a los 30 días; vencida, sale de las estadísticas y la ficha lo dice."],
+        ["Costo por persona y $", `Entrada mediana + plato fuerte mediano de la carta oficial. Si no: un plato fuerte, tres tacos, un desayuno o el menú fijo más barato. Sin bebidas, postres, guarniciones ni propina (10–15 %). Sin carta con precios, sin estimación. USD y EUR al tipo del BCE del ${FX_DATE}. Símbolos en pesos, de nuestro propio cálculo, nunca de Google: ${bands("es-MX")}.`],
+        ["Índice de precios", `Mediana por restaurante desde ${MIN_PRICED_DISHES} platillos con precio; por colonia o cocina desde 3 restaurantes. Grupos: mediana de medianas.`],
+        ["Reservación, Instagram, mapa", "Solo si el sitio oficial los da. Ubicación revisada contra la dirección verificada (OpenStreetMap)."],
+        ["Lo que no hacemos", "No evadimos anti-robots ni CAPTCHAs: bloqueado = no publicado. No compramos datos ni adivinamos. Un cierre se retira y queda en novedades."],
       ]
     : [
-        ["What gets into the catalog", "A restaurant is listed only when its official website (or the official Instagram linked from it) confirms the address, and it has an official menu or a verified Instagram plus a way to contact it. Press lists (Time Out, The Infatuation, Chilango, Local.mx and others) are used to discover places; they are never the source of a fact. Bars and cafés without a menu are left out."],
-        ["Where prices come from", "Only from the restaurant's own menu: its website, its PDF or its official ordering page. We do not use delivery-app prices (usually marked up), reviews, or third-party databases. Each dish is transcribed with its section, its peso price as printed and the date it was checked. Prices under 15 pesos are dropped (usually add-ons)."],
-        ["Dates and re-checks", "Every menu carries the date it was checked and a re-check date 30 days later. An overdue menu drops out of the statistics and the cost-per-person estimate until it is checked again; the restaurant page says so."],
-        ["Cost per person", `Estimated from the official menu: the median starter plus the median main course; one main course when there is no starter section; three tacos at a taquería; one breakfast plate at a breakfast place; or the cheapest set menu at a tasting-menu restaurant. Drinks, desserts, sides and tip (10–15% in Mexico) are not included. No sectioned, priced menu means no estimate. Dollar and euro equivalents use the European Central Bank reference rate of ${FX_DATE}.`],
-        ["$ to $$$$ symbols", `Worked out from our own cost per person, never from Google or another third party: $ up to ${PRICE_SYMBOL_BANDS[0]} pesos, $$ up to ${PRICE_SYMBOL_BANDS[1]}, $$$ up to ${PRICE_SYMBOL_BANDS[2].toLocaleString("en-US")}, $$$$ over ${PRICE_SYMBOL_BANDS[2].toLocaleString("en-US")}. No cost estimate, no symbol.`],
-        ["Price index", `A restaurant needs at least ${MIN_PRICED_DISHES} priced dishes to get a median; a neighborhood or cuisine needs at least 3 such restaurants. Group figures are the median of restaurant medians.`],
-        ["Booking, Instagram and map", "A booking channel is published only when the official site links or states it (OpenTable, Resy, WhatsApp, phone or walk-in). Instagram only when the official site links it. Map points are checked against the verified address (OpenStreetMap)."],
-        ["What we do not do", "We do not get around bot protection or CAPTCHAs: if a page blocks the check, the fact is not published. We buy no data and fill no gaps by guessing. A closed restaurant is removed and the closure is logged in the change log."],
+        ["What gets in", "Only if the official site (or the Instagram it links) confirms the address, with an official menu or verified Instagram, and a contact. Press lists help us find places, never as a source. Bars and cafés without a menu: out."],
+        ["Prices and dates", "Only the restaurant's own menu: website, PDF or official ordering page. Never delivery apps, reviews or third-party databases. Each dish: section, peso price as printed, date. Under 15 pesos: dropped. Every menu is re-checked after 30 days; overdue, it leaves the stats and the page says so."],
+        ["Cost per person and $", `Median starter + median main from the official menu. Otherwise: one main, three tacos, one breakfast plate or the cheapest set menu. No drinks, desserts, sides or tip (10–15%). No priced menu, no estimate. USD and EUR at the ECB rate of ${FX_DATE}. Symbols in pesos, from our own estimate, never Google: ${bands("en-US")}.`],
+        ["Price index", `A restaurant median needs ${MIN_PRICED_DISHES} priced dishes; a neighborhood or cuisine needs 3 such restaurants. Groups: median of medians.`],
+        ["Booking, Instagram, map", "Only when the official site gives them. Map points checked against the verified address (OpenStreetMap)."],
+        ["What we do not do", "No getting around bot protection or CAPTCHAs: blocked means unpublished. No bought data, no guessing. Closures are removed and logged."],
       ];
   return (
     <main className="ms-page" lang={lang(locale)}>
@@ -164,8 +155,8 @@ export function MethodologyView({ counts, locale }: { counts: CatalogCounts; loc
       <h1 className="ms-title">{es ? "Cómo verificamos cada restaurante" : "How every restaurant is checked"}</h1>
       <p className="ms-lede">
         {es
-          ? `Cada dato de ${SITE_NAME} tiene una fuente oficial y una fecha. Así se construyen las ${counts.restaurants} fichas.`
-          : `Every fact on ${SITE_NAME} has an official source and a date. This is how the ${counts.restaurants} records are built.`}
+          ? `Cada dato tiene fuente oficial y fecha. Así se construyen las ${counts.restaurants} fichas.`
+          : `Every fact has an official source and a date. How the ${counts.restaurants} records are built:`}
       </p>
       {sections.map(([title, text]) => (
         <Panel key={title} title={title}><p>{text}</p></Panel>
@@ -273,12 +264,17 @@ export function PrivacyView({ locale }: { locale: Locale }) {
         </p>
         <p>
           {es
-            ? "Dos datos quedan en tu navegador (localStorage): la moneda que eliges y el nombre que usas en Say. La moneda nunca sale de tu navegador; el nombre solo nos llega con una publicación. Puedes borrarlos limpiando los datos del sitio."
-            : "Two things stay in your browser (localStorage): the currency you pick and the name you use on Say. The currency never leaves your browser; the name reaches us only with a post. Clearing the site data removes them."}
+            ? "La moneda que eliges queda en tu navegador (localStorage) y nunca sale de él; si publicaste en Say antes de su pausa, también el nombre que usaste. Puedes borrarlos limpiando los datos del sitio."
+            : "The currency you pick stays in your browser (localStorage) and never leaves it; so does the name you used on Say, if you posted before it was paused. Clearing the site data removes them."}
         </p>
       </Panel>
 
       <Panel title="Say">
+        <p>
+          {es
+            ? "Say está en pausa desde el 5 de noviembre de 2026: ya no se puede publicar. Lo que sigue describe las publicaciones anteriores."
+            : "Say is paused since 5 November 2026: no new posts can be made. What follows covers earlier posts."}
+        </p>
         <p>
           {es
             ? "Sin cuenta y sin correo. Cuando publicas, guardamos el nombre que eliges, tu texto, la hora y el restaurante al que se refiere. No guardamos tu dirección IP. Tu navegador no habla directamente con la base de datos: nuestro servidor le pasa la publicación."
@@ -299,8 +295,8 @@ export function PrivacyView({ locale }: { locale: Locale }) {
       <Panel title={es ? "Alojamiento" : "Hosting"}>
         <p>
           {es
-            ? "El sitio lo aloja Vercel y la base de datos de Say, Supabase. Como cualquier proveedor de alojamiento, Vercel ve la dirección IP de los visitantes en sus registros técnicos. No usamos esos registros para rastrear a nadie."
-            : "The site is hosted by Vercel and Say's database by Supabase. Like any host, Vercel sees visitors' IP addresses in its technical logs. We do not use those logs to track anyone."}
+            ? "El sitio lo aloja Vercel y las publicaciones anteriores de Say, Supabase. Como cualquier proveedor de alojamiento, Vercel ve la dirección IP de los visitantes en sus registros técnicos. No usamos esos registros para rastrear a nadie."
+            : "The site is hosted by Vercel and earlier Say posts by Supabase. Like any host, Vercel sees visitors' IP addresses in its technical logs. We do not use those logs to track anyone."}
         </p>
       </Panel>
 

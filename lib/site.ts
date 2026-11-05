@@ -1,16 +1,19 @@
 export const SITE_NAME = "Mesasays";
-export const SITE_TAGLINE =
-  "The decentralized restaurant guide to Mexico City.";
-export const SITE_HOME_TITLE = "Mesasays — The decentralized restaurant guide to Mexico City";
-export const SITE_HOME_TITLE_ES = "Mesasays — La guía de restaurantes descentralizada de la Ciudad de México";
+export const SITE_TAGLINE = "The unbiased restaurant guide to Mexico City.";
+export const SITE_TAGLINE_ES = "La guía de restaurantes imparcial de la Ciudad de México.";
+export const SITE_HOME_TITLE = "Mesasays — The unbiased restaurant guide to Mexico City: real menus, prices, hours, how to book";
+export const SITE_HOME_TITLE_ES = "Mesasays — La guía de restaurantes imparcial de la Ciudad de México: cartas reales, precios, horarios y reservas";
+/** The one fairness line, used wherever the site says why it can be trusted. */
+export const SITE_FAIR_LINE = "No restaurant pays to be here.";
+export const SITE_FAIR_LINE_ES = "Ningún restaurante paga por estar aquí.";
 /** Home page description for search results; the restaurant count comes from the catalog at build time. */
 export function homeDescription(count: number, locale: "en" | "es" = "en") {
   return locale === "es"
-    ? `${count} restaurantes de la Ciudad de México con los precios de su carta oficial, el costo por persona y cómo reservar. Gratis, sin anuncios: ningún restaurante paga por estar aquí.`
-    : `${count} Mexico City restaurants with official menu prices, cost per person and how to book. Free, no ads: no restaurant pays to be here.`;
+    ? `Las cartas de ${count} restaurantes de la Ciudad de México, con los precios reales de su carta oficial, horarios y cómo reservar. Ningún restaurante paga por estar aquí.`
+    : `The menus of ${count} Mexico City restaurants, with real prices from each restaurant's own menu, hours and how to book. No restaurant pays to be here.`;
 }
 export const SITE_SERP_DESCRIPTION =
-  "Mexico City restaurants with official menu prices, cost per person and how to book. Free, no ads: no restaurant pays to be here.";
+  "The unbiased restaurant guide to Mexico City: real menus with prices from each restaurant's own menu, hours and how to book. No restaurant pays to be here.";
 export const SITE_CITY = "Mexico City";
 export const SITE_CITY_ES = "Ciudad de México";
 export const SITE_CITY_SHORT = "CDMX";

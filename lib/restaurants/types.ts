@@ -91,6 +91,8 @@ export type MenuPublication = {
   sourceLabel: string;
   checkedAt: string;
   recheckAfter: string;
+  // Last weekly check (scripts/freshness.mjs) where the official source was unchanged.
+  sourceUnchangedAt?: string;
   sourceDate?: string;
   language: "es" | "en";
   note: string;

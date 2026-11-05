@@ -4,13 +4,11 @@ import { RestaurantFilm } from "@/components/RestaurantFilm";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { RestaurantQuickFacts } from "@/components/RestaurantQuickFacts";
 import { RestaurantTiles, type RestaurantTile } from "@/components/RestaurantTiles";
-import { SayBlock } from "@/components/say/Say";
 import { paths, t, type Locale } from "@/lib/i18n";
 import { restaurantJsonLd } from "@/lib/jsonld";
 import type { Film } from "@/lib/restaurants/films";
 import { cuisineDisplay } from "@/lib/restaurants/price-index";
 import { restaurantPriceSymbol } from "@/lib/restaurants/quick-facts";
-import { sayPlace } from "@/lib/say/load";
 import type { SiteRestaurant } from "@/lib/restaurants/types";
 
 export function RestaurantView({
@@ -46,8 +44,7 @@ export function RestaurantView({
       {films.map((film) => (
         <RestaurantFilm key={film.videoId} film={film} restaurantName={restaurant.name} locale={locale} />
       ))}
-      {/* What people say sits between the film and the menu; the menu itself is unchanged. */}
-      <SayBlock place={sayPlace(restaurant)} lang={locale} />
+      {/* Say is paused (2026-11-05): its block (components/say/Say.tsx, SayBlock + sayPlace) is kept, not rendered. */}
       <RestaurantCard restaurant={restaurant} variant="page" locale={locale} showTitle={false} />
 
       {/* Links that help readers (and crawlers) move on, kept light: one line of dishes, nearby and same-cuisine tiles. */}

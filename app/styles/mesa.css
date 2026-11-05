@@ -1060,58 +1060,244 @@
     font-size: var(--ms-text-sm);
   }
 
-  /* Home on phones: no MENU button; the full menu sits under the logo as one row of boxes sharing their
-     borders, and its top border doubles as the header rule. */
-  @media (width <= 760px) {
-    .ms-shell:has(.ms-home) .ms-masthead.is-home {
-      padding-block-end: 0;
-      border-block-end: 0;
+  /* Home, every width: no MENU button; the full menu sits under the logo as one row of boxes sharing their
+     borders, and its top border doubles as the header rule (phones first, desktop since 2026-11-02). */
+  .ms-shell:has(.ms-home) .ms-masthead.is-home {
+    padding-block-end: 0;
+    border-block-end: 0;
+  }
+
+  .ms-masthead.is-home {
+    & .ms-nav-toggle {
+      display: none;
     }
 
-    .ms-masthead.is-home {
-      & .ms-nav-toggle {
-        display: none;
-      }
+    & .ms-lang {
+      margin-inline: auto 0;
+    }
 
-      & .ms-lang {
-        margin-inline: auto 0;
-      }
+    /* The menu row's own top border is the separator under the logo: one line, no gap. */
+    & .ms-nav-drawer {
+      display: flex;
+      inline-size: 100%;
+      margin-block-start: var(--ms-space-1);
+    }
 
-      /* The menu row's own top border is the separator under the logo: one line, no gap. */
-      & .ms-nav-drawer {
-        display: flex;
-        inline-size: 100%;
-        margin-block-start: var(--ms-space-1);
-      }
+    & .ms-nav {
+      display: flex;
+      flex-direction: row;
+      inline-size: 100%;
+      border: 0;
 
-      & .ms-nav {
-        display: flex;
-        flex-direction: row;
-        inline-size: 100%;
-        border: 0;
+      & a {
+        flex: 1 1 auto;
+        justify-content: center;
+        block-size: var(--ms-touch);
+        padding-inline: var(--ms-space-2);
+        border: var(--ms-line);
+        border-inline-end-width: 0;
+        border-block-end: var(--ms-line);
+        font-size: var(--ms-text-2xs);
+        letter-spacing: var(--ms-track-caps);
+        text-decoration: none;
 
-        & a {
-          flex: 1 1 auto;
-          justify-content: center;
-          block-size: var(--ms-touch);
-          padding-inline: var(--ms-space-2);
-          border: var(--ms-line);
-          border-inline-end-width: 0;
-          border-block-end: var(--ms-line);
-          font-size: var(--ms-text-2xs);
-          letter-spacing: var(--ms-track-caps);
-          text-decoration: none;
+        &:last-child {
+          border-inline-end-width: var(--ms-rule);
+        }
 
-          &:last-child {
-            border-inline-end-width: var(--ms-rule);
-          }
-
-          &:is(:hover, :active, [aria-current="page"]) {
-            background: var(--ms-ink);
-            color: var(--ms-paper);
-          }
+        &:is(:hover, :active, [aria-current="page"]) {
+          background: var(--ms-ink);
+          color: var(--ms-paper);
         }
       }
+    }
+  }
+
+  .ms-masthead.is-home .ms-masthead-row {
+    flex-wrap: wrap;
+    row-gap: var(--ms-space-3);
+  }
+
+  /* Desktop: undo the plain-text link spacing of the other pages' header, keep one row of shared borders. */
+  .ms-masthead.is-home {
+    & .ms-nav-drawer,
+    & .ms-nav {
+      gap: 0;
+    }
+
+    & .ms-nav a {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  @media (width > 760px) {
+    .ms-masthead.is-home .ms-nav a {
+      block-size: 48px;
+      font-size: var(--ms-text-xs);
+      letter-spacing: var(--ms-track-wide);
+    }
+  }
+
+  /* Easter egg: the word "decentralized" in the home title links to the manifesto, with no visible mark.
+     The curious find it on hover (agave); keyboard users still get the focus outline. */
+  .ms-title-link {
+    color: inherit;
+    text-decoration: none;
+
+    &:is(:hover, :focus-visible) {
+      color: var(--ms-agave);
+    }
+  }
+
+  /* Home, desktop only: one line under "Mexico City" inviting to use the finder on the right. */
+  .ms-home-cta {
+    display: none;
+  }
+
+  @media (width >= 900px) {
+    .ms-home-cta {
+      display: flex;
+      align-items: baseline;
+      gap: var(--ms-space-3);
+      margin: var(--ms-space-6) 0 0;
+      font-size: var(--ms-text-lg);
+      line-height: 1.4;
+    }
+
+    .ms-home-cta-arrow {
+      color: var(--ms-agave);
+      font-size: var(--ms-text-2xl);
+      line-height: 1;
+      animation: ms-nudge 2.4s ease-in-out infinite;
+
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
+    }
+  }
+
+  @keyframes ms-nudge {
+    0%, 70%, 100% { transform: translateX(0); }
+    80% { transform: translateX(6px); }
+    90% { transform: translateX(0); }
+  }
+
+  /* The green word of the home title ("unbiased" / "imparcial") links to the project page. */
+  .ms-title-accent {
+    color: var(--ms-agave);
+    text-decoration: none;
+
+    &:is(:hover, :focus-visible) {
+      text-decoration-line: underline;
+      text-decoration-thickness: 0.08em;
+      text-underline-offset: 0.12em;
+    }
+  }
+
+  /* Home, desktop only: three promises in a row under the hero. */
+  .ms-home-principles {
+    display: none;
+  }
+
+  /* Home on a large screen (2026-11-04): a 12-column feel on a wider page.
+     - hero: title on the left, finder on the right, centred in the space above the principles;
+     - principles: one ruled row of three equal columns, sharing the hero's left edge;
+     - the page grows to 1200 px on wide screens so the hero stops floating in empty margins. */
+  @media (width >= 900px) {
+    .ms-home {
+      text-align: start;
+    }
+
+    .ms-home-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 500px);
+      gap: clamp(var(--ms-space-7), 6vw, 96px);
+      align-items: center;
+      padding-block: var(--ms-space-7);
+    }
+
+    .ms-home .ms-title {
+      max-inline-size: none;
+      margin: 0 0 var(--ms-space-4);
+      font-size: clamp(40px, 4.4vw, 64px);
+      line-height: 1;
+      /* Break between words only: "DECENTRALIZED" must never split. */
+      overflow-wrap: normal;
+      hyphens: none;
+    }
+
+    .ms-home .ms-promise {
+      margin: 0;
+    }
+
+    .ms-home .ms-finder {
+      inline-size: 100%;
+      max-inline-size: none;
+      margin: 0;
+    }
+
+    /* The principles row closes the page on desktop: it says what the phone footer says, with links. */
+    .ms-home-principles {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      padding-block-end: var(--ms-space-7);
+      border-block-start: var(--ms-line);
+    }
+    /* "MCP … coming soon": one quiet line under the three columns. */
+    .ms-home-principles-soon {
+      grid-column: 1 / -1;
+      margin: 0;
+      padding-block-start: var(--ms-space-4);
+    }
+
+    .ms-home-foot {
+      display: none;
+    }
+
+    .ms-home-principle {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ms-space-3);
+      padding: var(--ms-space-5) var(--ms-space-5) 0;
+      border-inline-start: var(--ms-hairline);
+
+      &:first-child {
+        padding-inline-start: 0;
+        border-inline-start: 0;
+      }
+
+      & .ms-label {
+        margin: 0;
+      }
+    }
+
+    .ms-home-principle-text {
+      flex: 1;
+      max-inline-size: 26rem;
+      margin: 0;
+      font-size: var(--ms-text-base);
+      line-height: 1.5;
+    }
+
+    .ms-home-principle-link {
+      align-self: flex-start;
+      font-family: var(--ms-font-mono);
+      font-size: var(--ms-text-xs);
+      letter-spacing: var(--ms-track-snug);
+      text-decoration: none;
+      border-block-end: var(--ms-line);
+
+      &:is(:hover, :focus-visible) {
+        background: var(--ms-agave);
+        color: var(--ms-paper);
+      }
+    }
+  }
+
+  @media (width >= 1200px) {
+    .ms-shell:has(.ms-home) {
+      --ms-page-max: 1200px;
     }
   }
 
@@ -1199,6 +1385,169 @@
   }
 
 
+
+  /* ---------- Page: manifesto (/decentralized) ---------- */
+
+  /* A long read: numbered parts separated by rules; on desktop the number sits in its own left column. */
+  .ms-manifesto-head {
+    padding-block-end: var(--ms-space-5);
+
+    & .ms-title {
+      @media (width >= 900px) {
+        margin-block: var(--ms-space-6) var(--ms-space-4);
+        font-size: clamp(36px, 3.6vw, 52px);
+        line-height: 1;
+      }
+    }
+
+    & .ms-lede {
+      max-inline-size: 44rem;
+    }
+  }
+
+  .ms-manifesto-part {
+    display: grid;
+    gap: var(--ms-space-2);
+    padding-block: var(--ms-space-5) var(--ms-space-6);
+    border-block-start: var(--ms-line);
+
+    @media (width >= 900px) {
+      grid-template-columns: 160px minmax(0, 1fr);
+      gap: var(--ms-space-5);
+    }
+  }
+
+  .ms-manifesto-num {
+    margin: 0;
+    padding-block-start: 4px;
+  }
+
+  .ms-manifesto-body {
+    max-inline-size: 44rem;
+    font-size: var(--ms-text-base);
+    line-height: 1.55;
+
+    & p {
+      margin: 0 0 var(--ms-space-3);
+    }
+  }
+
+  .ms-manifesto-h {
+    margin: 0 0 var(--ms-space-4);
+    font-size: var(--ms-text-xl);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: var(--ms-track-snug);
+    text-transform: uppercase;
+  }
+
+  .ms-manifesto-list {
+    display: grid;
+    gap: var(--ms-space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li {
+      position: relative;
+      padding-inline-start: var(--ms-space-5);
+    }
+
+    & li::before {
+      content: "—";
+      position: absolute;
+      inset-inline-start: 0;
+    }
+
+    &.is-ordered {
+      counter-reset: ms-step;
+
+      & li {
+        counter-increment: ms-step;
+      }
+
+      & li::before {
+        content: counter(ms-step, decimal-leading-zero);
+        font-family: var(--ms-font-mono);
+        font-size: var(--ms-text-xs);
+        line-height: 1.9;
+      }
+    }
+  }
+
+  .ms-manifesto-defs {
+    display: grid;
+    gap: var(--ms-space-2);
+    margin: 0;
+
+    & dt {
+      margin-block-start: var(--ms-space-3);
+      font-family: var(--ms-font-mono);
+      font-size: var(--ms-text-xs);
+      font-weight: 700;
+      letter-spacing: var(--ms-track-label);
+      text-transform: uppercase;
+
+      &:first-child {
+        margin-block-start: 0;
+      }
+    }
+
+    & dd {
+      margin: 0;
+    }
+  }
+
+  .ms-manifesto-status {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: var(--ms-hairline);
+
+    & li {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: var(--ms-space-4);
+      align-items: baseline;
+      padding-block: var(--ms-space-3);
+      border-block-end: var(--ms-hairline);
+    }
+  }
+
+  .ms-manifesto-tag {
+    justify-self: start;
+    padding: 2px 6px;
+    border: var(--ms-hairline);
+    white-space: nowrap;
+
+    &.is-live {
+      border-color: var(--ms-agave);
+      background: var(--ms-agave);
+      color: var(--ms-paper);
+    }
+  }
+
+  .ms-manifesto-end {
+    padding-block-start: var(--ms-space-5);
+    border-block-start: var(--ms-line);
+  }
+
+  .ms-manifesto-motto {
+    max-inline-size: 40rem;
+    margin: 0 0 var(--ms-space-4);
+    font-size: var(--ms-text-xl);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: var(--ms-track-snug);
+    text-transform: uppercase;
+  }
+
+  .ms-manifesto-contact {
+    max-inline-size: 44rem;
+    margin: 0;
+    font-size: var(--ms-text-sm);
+    line-height: 1.6;
+  }
 
   /* ---------- Page: restaurant menu ---------- */
 

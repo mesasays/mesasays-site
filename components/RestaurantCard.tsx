@@ -186,13 +186,18 @@ export function RestaurantCard({
             <External href={website} className="ms-link">
               {s.officialSite}
             </External>
+          ) : instagram ? (
+            // Instagram-only restaurants: their Instagram account is the official page.
+            <External href={instagram} className="ms-link">
+              Instagram · {handle}
+            </External>
           ) : null
         }
       />
       <Row
         label="Instagram"
         value={
-          instagram ? (
+          instagram && website ? (
             <External href={instagram} className="ms-link">
               {handle}
             </External>

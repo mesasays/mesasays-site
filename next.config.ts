@@ -34,12 +34,15 @@ const baseConfig: NextConfig = {
       destination: "https://mesasays.com/:path*",
       permanent: true,
     }));
-    // The two Say conversations from the Supabase era, moved to Farcaster on 2026-11-01.
-    const say = [
-      ["33dd1314-4969-451c-a4fc-9cd9c49b333e", "3357281-0xefc513b3cc22d4809221a4c06788ed08d5d4f124"],
-      ["43addee2-449d-475b-8f2b-0d0986f2e247", "3357281-0x7a667f6c3a6592a2d31cde0a1b7a98196b398a3f"],
-    ].map(([from, to]) => ({ source: `/say/${from}`, destination: `/say/${to}`, permanent: true }));
-    return [...hosts, ...say];
+    // Repositioning of 2026-11-05: the "decentralized" manifesto pages fold into About, and Say is paused
+    // (its code stays in app/say and components/say, dormant). permanent → 308.
+    const paused = [
+      { source: "/decentralized", destination: "/unbiased", permanent: true },
+      { source: "/es/descentralizado", destination: "/es/imparcial", permanent: true },
+      { source: "/say", destination: "/", permanent: true },
+      { source: "/say/:path*", destination: "/", permanent: true },
+    ];
+    return [...hosts, ...paused];
   },
   outputFileTracingIncludes: {
     "*": [

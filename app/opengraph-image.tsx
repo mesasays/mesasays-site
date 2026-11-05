@@ -41,7 +41,7 @@ export default async function OpenGraphImage() {
       >
         <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "Space Mono", fontSize: 22, letterSpacing: "0.12em", textTransform: "uppercase" }}>
           <span>Mexico City</span>
-          <span>Restaurant catalog</span>
+          <span>Real menus · Real prices</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ fontFamily: "Space Grotesk", fontSize: 56, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", lineHeight: 1 }}>

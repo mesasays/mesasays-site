@@ -46,9 +46,12 @@ export async function checkSource(menu, previous, fetchSource = fetch) {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const bytes = Buffer.from(await response.arrayBuffer());
     if (bytes.length > 20 * 1024 * 1024) throw new Error("Source exceeds 20 MB");
-    const hash = fingerprint(bytes, source.kind);
+    // Many official menus are a PDF or an image served from the restaurant's own site: recognise them by content.
+    const type = (response.headers?.get?.("content-type") ?? "").toLowerCase();
+    const kind = bytes.subarray(0, 5).toString() === "%PDF-" ? "pdf" : type.startsWith("image/") ? "image" : source.kind;
+    const hash = kind === "image" ? createHash("sha256").update(bytes).digest("hex") : fingerprint(bytes, kind);
     const priorHash = previous?.sourceUrl === menu.url ? previous?.fingerprint : undefined;
-    return { ...row, kind: source.kind, status: !priorHash ? "baseline" : hash === priorHash ? "unchanged" : "changed",
+    return { ...row, kind, status: !priorHash ? "baseline" : hash === priorHash ? "unchanged" : "changed",
       fingerprint: hash, bytes: bytes.length };
   } catch (error) {
     return { ...row, kind: source.kind, status: "unavailable", reason: error.name === "TimeoutError" ? "Timed out" : error.message,

@@ -15,7 +15,6 @@ function navFor(locale: Locale) {
     { href: paths.restaurants(locale), label: s.restaurants },
     { href: paths.dishes(locale), label: s.dishes },
     { href: paths.films(locale), label: s.films },
-    { href: "/say", label: "Say" },
   ];
 }
 

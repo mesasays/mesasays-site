@@ -45,3 +45,24 @@ restaurant.menu.publication.recheckAfter = "2999-01-01";
 restaurant.menu.publication.coverage = "dishes";
 assert.equal(publishedMenuJsonLd(restaurant), null, "Social examples are not a complete current Menu");
 console.log("Menu lifecycle, Mexico calendar boundary, local-source filtering and menu-level prices: passed.");
+
+// Menus older than 12 months by their own date are not published; the page keeps its other facts.
+{
+  const { menuSourceTooOld } = load("@/lib/restaurants/menu-publication");
+  const now = new Date("2026-11-04T18:00:00Z");
+  assert.equal(menuSourceTooOld("2021-02", now), true);
+  assert.equal(menuSourceTooOld("2023-09", now), true);
+  assert.equal(menuSourceTooOld("2025-10", now), true);
+  assert.equal(menuSourceTooOld("2025-11", now), false);
+  assert.equal(menuSourceTooOld("2025", now), false); // a bare year counts from December
+  assert.equal(menuSourceTooOld("2024", now), true);
+  assert.equal(menuSourceTooOld(undefined, now), false);
+  const dated = { ...menu, publication: { ...menu.publication, sourceDate: "2021-02" } };
+  const hidden = applyV1Menu(pujol, dated, now);
+  assert.equal(hidden.menu.items.length, pujol.menu.items.length);
+  assert.equal(hidden.menu.publication, pujol.menu.publication);
+  assert.equal(hidden.name, pujol.name);
+  const fresh = applyV1Menu(pujol, { ...menu, publication: { ...menu.publication, sourceDate: "2026-04" } }, now);
+  assert.equal(fresh.menu.items.length, menu.items.length);
+}
+console.log("menu age rule ok");

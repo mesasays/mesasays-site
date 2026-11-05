@@ -10,4 +10,5 @@ const isOpenBuild = existsSync(join(V1_ROOT, "OPEN_DATA_BUILD.json"));
 
 export const dataLicense = isOpenBuild
   ? { license: "https://opendatacommons.org/licenses/odbl/1-0/", label: "ODbL 1.0", reuse: OPEN_DATASET_URL }
-  : { license: null, label: `for reference; to reuse, take the open ODbL dataset: ${OPEN_DATASET_URL}`, reuse: OPEN_DATASET_URL };
+  // 2026-11-05: the open dataset is no longer exported (scripts/export-public.mjs), so mesasays.com points nowhere.
+  : { license: null, label: "for reference only", reuse: null };
